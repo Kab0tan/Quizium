@@ -5,7 +5,6 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  Modal,
 } from "react-native";
 // Expo and Navigation imports
 import { useLocalSearchParams, Link, useFocusEffect } from "expo-router";
@@ -15,6 +14,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 // Custom component and hook imports
 import { ThemedText } from "../components/ThemedText";
 import { useDatabase } from "../useDatabase";
+import { ModalDelete } from "../components/ModalAlert";
 // Constants
 import { COLORS } from "../constants/theme";
 
@@ -36,8 +36,7 @@ export default function ListQuestions() {
   const loadQuestions = async () => {
     try {
       const loadedQuestions = await getQuestions(Number(quizId));
-      console.log("Loaded questions:", loadedQuestions);
-      setQuestions(loadedQuestions);
+      setQuestions(loadedQuestions as any);
     } catch (error) {
       console.error("Error loading questions:", error);
     }
@@ -45,7 +44,6 @@ export default function ListQuestions() {
 
   const handleDeleteQuestion = async (questionId: number) => {
     try {
-      console.log("Deleting question with ID:", questionId);
       await deleteQuestion(questionId);
       await loadQuestions();
     } catch (error) {
@@ -111,7 +109,7 @@ export default function ListQuestions() {
                 flexDirection: "column",
                 paddingHorizontal: 20,
                 paddingVertical: 10,
-                marginVertical: 15,
+                marginBottom: 15,
               }}
             >
               {/* question text */}
@@ -144,7 +142,6 @@ export default function ListQuestions() {
                     asChild
                   >
                     <TouchableOpacity
-                      onPress={() => console.log("Edit button pressed")}
                       style={{
                         backgroundColor: COLORS.create,
                         padding: 5,
@@ -184,79 +181,35 @@ export default function ListQuestions() {
               <ThemedText variant="h4"> Options : </ThemedText>
               <View style={{ paddingLeft: 20 }}>
                 {JSON.parse(item["options"]).map(
-                  (option: string, index: number) => (
-                    <ThemedText key={index}>• {option}</ThemedText>
-                  )
+                  (option: string, index: number) =>
+                    option != item["correct_answer"] && (
+                      <ThemedText key={index}>• {option}</ThemedText>
+                    )
                 )}
               </View>
             </View>
           )}
           keyExtractor={(item) => item["id"]}
         />
-      </View>
-      <Modal animationType="slide" visible={showModalDelete} transparent={true}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 20,
-              borderRadius: 20,
-              width: 300,
-              backgroundColor: COLORS.white,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <ThemedText variant="h3">Delete this question ?</ThemedText>
-            <ThemedText
-              variant="italic"
-              color={COLORS.dark_grey}
-              style={{ marginVertical: 10 }}
-            >
-              (This action is irreversible)
-            </ThemedText>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-evenly",
-                marginTop: 20,
-                gap: 10,
-              }}
-            >
-              <TouchableOpacity
-                style={{}}
-                onPress={() => {
-                  setShowModalDelete(false);
-                }}
-              >
-                <ThemedText color={COLORS.dark_grey}>Cancel</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  handleDeleteQuestion(currentQuestionToDelete);
-                  setShowModalDelete(false);
-                }}
-              >
-                <ThemedText color={COLORS.delete}>Delete</ThemedText>
-              </TouchableOpacity>
-            </View>
-          </View>
+        {/* total number of questions */}
+        <View style={{  padding: 10 }}>
+          <ThemedText variant="h4" color={COLORS.white}>
+            {questions.length} question(s)
+          </ThemedText>
         </View>
-      </Modal>
+      </View>
+
+      <ModalDelete
+        modalDeleteVisible={showModalDelete}
+        messageDelete="Delete this question ?"
+        handleDelete={() => {
+          handleDeleteQuestion(currentQuestionToDelete);
+          setShowModalDelete(false);
+        }}
+        handleCancel={() => {
+          setShowModalDelete(false);
+        }}
+      />
     </SafeAreaView>
   );
 }

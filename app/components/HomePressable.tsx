@@ -1,22 +1,13 @@
 import { Pressable, View, type TextProps } from "react-native";
 import { router } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS } from "../constants/theme";
 
-type Prop = TextProps & {
-  pathname?: string;
-  useBack?: boolean;
-};
-
-export function BackPressable({ pathname, useBack = false }: Prop) {
+export function HomePressable() {
   const handlePress = () => {
-    if (useBack) {
-      router.back();
-    } else {
-      router.push({
-        pathname: pathname ?? "/",
-      });
-    }
+    router.push({
+      pathname: "/",
+    });
   };
 
   return (
@@ -28,7 +19,7 @@ export function BackPressable({ pathname, useBack = false }: Prop) {
           padding: 8,
         })}
       >
-        <Ionicons name="arrow-back" size={24} color={COLORS.white} />
+        <Entypo name="home" size={24} color={COLORS.white} />
       </Pressable>
     </View>
   );

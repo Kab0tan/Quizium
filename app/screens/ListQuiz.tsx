@@ -5,14 +5,15 @@ import {
   TouchableOpacity,
   FlatList,
   Modal,
-  TextInput,
 } from "react-native";
-import { Link, useFocusEffect } from "expo-router";
+import { Link, useFocusEffect, router } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import { ThemedText } from "../components/ThemedText";
+import { ThemedTextInput } from "../components/ThemedTextInput";
+import { ModalDelete } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
 import { COLORS } from "../constants/theme";
 
@@ -42,8 +43,7 @@ export default function ListQuiz() {
   const loadQuizzes = async () => {
     try {
       const loadedQuizzes = await getQuizzes();
-      console.log("Loaded quizzes:", loadedQuizzes);
-      setQuizzes(loadedQuizzes);
+      setQuizzes(loadedQuizzes as any);
     } catch (error) {
       console.error("Error loading quizzes:", error);
     }
@@ -51,7 +51,6 @@ export default function ListQuiz() {
 
   const handleDeleteQuiz = async (quizId: number) => {
     try {
-      console.log("Deleting quiz with ID:", quizId);
       await deleteQuiz(quizId);
       await loadQuizzes();
     } catch (error) {
@@ -101,21 +100,11 @@ export default function ListQuiz() {
           }}
         >
           <Entypo name="magnifying-glass" size={30} color="black" />
-          <TextInput
+          <ThemedTextInput
             value={searchText}
-            multiline
             placeholder={"SearchBar..."}
-            placeholderTextColor={COLORS.dark_grey}
-            style={{
-              width: "100%",
-              fontSize: 20,
-              paddingLeft: 5,
-            }}
-            autoCapitalize="words"
-            autoCorrect={false}
-            onChangeText={(text) => {
-              setSearchText(text);
-            }}
+            handleChange={setSearchText}
+            variant="searchBar"
           />
         </View>
 
@@ -185,7 +174,6 @@ export default function ListQuiz() {
                       asChild
                     >
                       <TouchableOpacity
-                        onPress={() => console.log("List button pressed")}
                         style={{
                           backgroundColor: COLORS.explore,
                           padding: 5,
@@ -228,70 +216,17 @@ export default function ListQuiz() {
         />
       </View>
       {/* delete modal */}
-      <Modal animationType="slide" visible={showModalDelete} transparent={true}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 20,
-              borderRadius: 20,
-              width: 300,
-              backgroundColor: COLORS.white,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <ThemedText variant="h3">Delete this quiz ?</ThemedText>
-            <ThemedText
-              variant="italic"
-              color={COLORS.dark_grey}
-              style={{ marginVertical: 10 }}
-            >
-              (This action is irreversible)
-            </ThemedText>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-evenly",
-                marginTop: 20,
-                gap: 10,
-              }}
-            >
-              <TouchableOpacity
-                style={{}}
-                onPress={() => {
-                  setShowModalDelete(false);
-                }}
-              >
-                <ThemedText color={COLORS.dark_grey}>Cancel</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{}}
-                onPress={() => {
-                  handleDeleteQuiz(currentItemToDelete);
-                  setShowModalDelete(false);
-                }}
-              >
-                <ThemedText color={COLORS.delete}>Delete</ThemedText>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ModalDelete
+        modalDeleteVisible={showModalDelete}
+        messageDelete="Delete this quiz ?"
+        handleDelete={() => {
+          handleDeleteQuiz(currentItemToDelete);
+          setShowModalDelete(false);
+        }}
+        handleCancel={() => {
+          setShowModalDelete(false);
+        }}
+      />
     </SafeAreaView>
   );
 }

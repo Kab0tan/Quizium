@@ -1,16 +1,11 @@
 import { useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-} from "react-native";
-import { useLocalSearchParams, Link } from "expo-router";
+import { SafeAreaView, View, TouchableOpacity } from "react-native";
+import { useLocalSearchParams, router } from "expo-router";
 import { COLORS } from "../constants/theme";
 import { ThemedText } from "../components/ThemedText";
+import { ThemedTextInput } from "../components/ThemedTextInput";
+import { ModalAlert } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
-import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function UpdateQuiz() {
   const { quizId, name, description } = useLocalSearchParams();
@@ -24,8 +19,15 @@ export default function UpdateQuiz() {
   const handleUpdateQuiz = async () => {
     try {
       await updateQuiz(Number(quizId), newName, newDescription);
-      console.log("Quiz updated successfully");
       setModalVisible(true);
+      // Hide the modal after 1 second
+      const timer = setTimeout(() => {
+        setModalVisible(false);
+        setErrorUpdate(false);
+        router.back();
+      }, 1000);
+      // Clean up the timer when the component unmounts or the state changes
+      return () => clearTimeout(timer);
     } catch (error) {
       console.error("Error updating quiz:", error);
       setErrorUpdate(true);
@@ -73,23 +75,10 @@ export default function UpdateQuiz() {
               Name
             </ThemedText>
           </View>
-          <TextInput
+          <ThemedTextInput
             value={newName}
             placeholder="Enter new quiz name..."
-            style={{
-              width: "100%",
-              borderRadius: 10,
-              padding: 15,
-              fontSize: 20,
-              backgroundColor: COLORS.white,
-            }}
-            // Add these props for better UX
-            autoCapitalize="words"
-            autoCorrect={false}
-            placeholderTextColor={COLORS.black}
-            onChangeText={(text) => {
-              setNewName(text);
-            }}
+            handleChange={setNewName}
           />
           {/* input description field */}
           <View style={{ width: "100%" }}>
@@ -105,24 +94,10 @@ export default function UpdateQuiz() {
               Description
             </ThemedText>
           </View>
-          <TextInput
+          <ThemedTextInput
             value={newDescription}
-            multiline
             placeholder="Enter new quiz description..."
-            style={{
-              width: "100%",
-              borderRadius: 10,
-              padding: 15,
-              fontSize: 20,
-              backgroundColor: COLORS.white,
-            }}
-            // Add these props for better UX
-            autoCapitalize="words"
-            autoCorrect={false}
-            placeholderTextColor={COLORS.black}
-            onChangeText={(text) => {
-              setNewDescription(text);
-            }}
+            handleChange={setNewDescription}
           />
         </View>
 
@@ -144,64 +119,13 @@ export default function UpdateQuiz() {
           <ThemedText variant="h3">Update Quiz</ThemedText>
         </TouchableOpacity>
       </View>
-      <Modal animationType="slide" visible={modalVisible} transparent={true}>
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 20,
-              height: 200,
-              width: 200,
-              backgroundColor: COLORS.white,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <ThemedText>Quiz updated successfully !</ThemedText>
-            {!errorUpdate ? (
-              <Link
-                href={{
-                  pathname: "./ListQuiz",
-                }}
-                asChild
-              >
-                <TouchableOpacity
-                  style={{ marginTop: 20 }}
-                  onPress={() => {
-                    setModalVisible(false);
-                    setErrorUpdate(false);
-                  }}
-                >
-                  <AntDesign
-                    name={errorUpdate ? "closecircle" : "checkcircle"}
-                    size={50}
-                    color={errorUpdate ? COLORS.error : COLORS.success}
-                  />
-                </TouchableOpacity>
-              </Link>
-            ) : (
-              <TouchableOpacity
-                style={{ marginTop: 20 }}
-                onPress={() => {
-                  setModalVisible(false);
-                  setErrorUpdate(false);
-                }}
-              >
-                <AntDesign name="closecircle" size={50} color={COLORS.error} />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </Modal>
+
+      {/* Modal Alert */}
+      <ModalAlert
+        message="Quiz updated successfully !"
+        modalVisible={modalVisible}
+        errorCreate={errorUpdate}
+      />
     </SafeAreaView>
   );
 }

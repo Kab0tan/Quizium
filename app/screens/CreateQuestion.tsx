@@ -1,20 +1,14 @@
 import { useState, useCallback } from "react";
-import {
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  ScrollView,
-} from "react-native";
-import { Link, useLocalSearchParams, useFocusEffect } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { SafeAreaView, View, TouchableOpacity, ScrollView } from "react-native";
+import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
+import { ThemedTextInput } from "../components/ThemedTextInput";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { ModalAlert } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
 import { COLORS } from "../constants/theme";
 
 export default function CreateQuestion() {
-
   const [question, setQuestion] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [options, setOptions] = useState(["", "", ""]);
@@ -23,7 +17,6 @@ export default function CreateQuestion() {
   const { quizId } = useLocalSearchParams();
 
   const { addQuestion } = useDatabase();
-
 
   useFocusEffect(
     useCallback(() => {
@@ -38,8 +31,21 @@ export default function CreateQuestion() {
 
   const handleAddingQuestion = async () => {
     try {
-      await addQuestion(Number(quizId), question, correctAnswer, [...options, correctAnswer]);
+      await addQuestion(Number(quizId), question, correctAnswer, options);
       setModalVisible(true);
+
+      // Hide the modal after 1 second
+      const timer = setTimeout(() => {
+        setModalVisible(false);
+        setErrorAdding(false);
+        router.push({
+          pathname: "./ListQuestions",
+          params: { quizId: Number(quizId) },
+        });
+      }, 1000);
+
+      // Clean up the timer when the component unmounts or the state changes
+      return () => clearTimeout(timer);
     } catch (error) {
       console.error("Error adding question:", error);
       setErrorAdding(true);
@@ -71,10 +77,12 @@ export default function CreateQuestion() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 10,
+                alignContent: "center",
               }}
             >
-              <ThemedText variant="h3">Create Question</ThemedText>
+              <ThemedText variant="h3" style={{ textAlign: "center" }}>Create Question</ThemedText>
             </View>
+
             {/* input Question field */}
             <View style={{ width: "100%" }}>
               <ThemedText
@@ -89,24 +97,34 @@ export default function CreateQuestion() {
                 Question
               </ThemedText>
             </View>
-            <TextInput
-              value={question}
-              multiline
-              placeholder="Enter quiz Question..."
-              placeholderTextColor={COLORS.dark_grey}
-              style={{
-                width: "100%",
-                borderRadius: 10,
-                padding: 15,
-                fontSize: 20,
-                backgroundColor: COLORS.white,
-              }}
-              autoCapitalize="words"
-              autoCorrect={false}
-              onChangeText={(text) => {
-                setQuestion(text);
-              }}
-            />
+            <View style={{ width: "100%", flexDirection: "row", gap: 10 }}>
+              <View
+                style={{ flex: 1 }}
+                onLayout={(event) => {
+                  const { height } = event.nativeEvent.layout;
+                  console.log("Height:", height);
+                }}
+              >
+                <ThemedTextInput
+                  value={question}
+                  placeholder="Enter quiz Question..."
+                  handleChange={setQuestion}
+                />
+              </View>
+              <TouchableOpacity
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: COLORS.create,
+                  borderRadius: 10,
+                  paddingHorizontal: 10,
+                  maxHeight: 48,
+                }}
+              >
+                <FontAwesome6 name="image" size={25} color="black" />
+              </TouchableOpacity>
+            </View>
+
             {/* input correctAnswer field */}
             <View style={{ width: "100%" }}>
               <ThemedText
@@ -121,23 +139,10 @@ export default function CreateQuestion() {
                 Correct answer
               </ThemedText>
             </View>
-            <TextInput
+            <ThemedTextInput
               value={correctAnswer}
-              multiline
-              placeholder="Correct answer..."
-              placeholderTextColor={COLORS.dark_grey}
-              style={{
-                width: "100%",
-                borderRadius: 10,
-                padding: 15,
-                fontSize: 20,
-                backgroundColor: COLORS.white,
-              }}
-              autoCapitalize="words"
-              autoCorrect={false}
-              onChangeText={(text) => {
-                setCorrectAnswer(text);
-              }}
+              placeholder="Enter correct answer..."
+              handleChange={setCorrectAnswer}
             />
             {/* input options field */}
             {options.map((option, index) => (
@@ -152,21 +157,10 @@ export default function CreateQuestion() {
                 >
                   Option {index + 1}
                 </ThemedText>
-                <TextInput
+                <ThemedTextInput
                   value={option}
-                  multiline
                   placeholder={`Option ${index + 1}...`}
-                  placeholderTextColor={COLORS.dark_grey}
-                  style={{
-                    width: "100%",
-                    borderRadius: 10,
-                    padding: 15,
-                    fontSize: 20,
-                    backgroundColor: COLORS.white,
-                  }}
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                  onChangeText={(text) => {
+                  handleChange={(text) => {
                     const newOptions = [...options];
                     newOptions[index] = text;
                     setOptions(newOptions);
@@ -197,53 +191,11 @@ export default function CreateQuestion() {
       </ScrollView>
 
       {/* modal */}
-      <Modal animationType="slide" visible={modalVisible} transparent={true}>
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 20,
-              height: 200,
-              width: 200,
-              backgroundColor: COLORS.white,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <ThemedText>Question added successfully !</ThemedText>
-            <Link
-              href={{
-                pathname: `./ListQuestions`,
-                params: { quizId: quizId },
-              }}
-              asChild
-            >
-              <TouchableOpacity
-                style={{ marginTop: 20 }}
-                onPress={() => {
-                  setModalVisible(false);
-                  setErrorAdding(false);
-                }}
-              >
-                <AntDesign
-                  name={errorAdding ? "closecircle" : "checkcircle"}
-                  size={50}
-                  color={errorAdding ? COLORS.error : COLORS.success}
-                />
-              </TouchableOpacity>
-            </Link>
-          </View>
-        </View>
-      </Modal>
+      <ModalAlert
+        message="Question added successfully !"
+        modalVisible={modalVisible}
+        errorCreate={errorAdding}
+      />
     </SafeAreaView>
   );
 }

@@ -1,8 +1,9 @@
-import {  Pressable } from "react-native";
-import { Stack, router } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { Stack } from "expo-router";
 import { BackPressable } from "./components/BackPressable";
+import { HomePressable } from "./components/HomePressable";
 import { COLORS } from "./constants/theme";
+
+const ANIMATION = "fade_from_bottom";
 
 export default function RootLayout() {
   return (
@@ -10,12 +11,16 @@ export default function RootLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: COLORS.background },
         headerShadowVisible: false,
+        headerRight: () => (
+          <HomePressable />
+        ),
       }}
     >
       <Stack.Screen
         name="index"
         options={{
           headerShown: false,
+          animation:ANIMATION
         }}
       />
       <Stack.Screen
@@ -25,6 +30,7 @@ export default function RootLayout() {
           headerLeft: () => (
             <BackPressable />
           ),
+          animation:ANIMATION
         }}
       />
       <Stack.Screen
@@ -34,6 +40,7 @@ export default function RootLayout() {
           headerLeft: () => (
             <BackPressable pathname="./ListQuiz" />
           ),
+          animation:ANIMATION
         }}
       />
       <Stack.Screen
@@ -41,8 +48,9 @@ export default function RootLayout() {
         options={{
           title: "",
           headerLeft: () => (
-            <BackPressable pathname="./ListQuestions" />
+            <BackPressable useBack={true} />
           ),
+          animation:ANIMATION
         }}
       />
       <Stack.Screen
@@ -52,6 +60,7 @@ export default function RootLayout() {
           headerLeft: () => (
             <BackPressable pathname="./ListQuiz" />
           ),
+          animation:ANIMATION
         }}
       />
       <Stack.Screen
@@ -61,6 +70,7 @@ export default function RootLayout() {
           headerLeft: () => (
             <BackPressable />
           ),
+          animation:ANIMATION
         }}
       />
       <Stack.Screen
@@ -70,6 +80,7 @@ export default function RootLayout() {
           headerLeft: () => (
             <BackPressable pathname="./ListQuestions" />
           ),
+          animation:ANIMATION
         }}
       />
       <Stack.Screen
@@ -79,6 +90,7 @@ export default function RootLayout() {
           headerLeft: () => (
             <BackPressable pathname="./ListQuiz" />
           ),
+          animation:ANIMATION
         }}
       />
     </Stack>

@@ -1,30 +1,30 @@
 {
   "expo": {
-    "name": "QuizAppReact",
-    "slug": "QuizAppReact",
+    "name": "Quizium",
+    "slug": "Quizium",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "icon": "./app/assets/log_quiz.png",
     "splash": {
-      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kabotan.Quizium"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./app/assets/log_quiz.png"
+      },
+      "package": "com.kabotan.Quizium"
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "static"
     },
     "plugins": [
       "expo-router"
@@ -34,7 +34,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "415d1620-b9e6-4ff7-9763-c7ed360b5941"
+        "projectId": "854ceedf-52a8-4811-9810-dfa26ebf5416"
       }
     }
   }

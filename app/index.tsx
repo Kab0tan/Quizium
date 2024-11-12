@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import { useFonts } from "expo-font";
@@ -10,7 +9,6 @@ import {
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { ThemedText } from "./components/ThemedText";
-import { useDatabase } from "./useDatabase";
 import { COLORS } from "./constants/theme";
 
 export default function Index() {
@@ -19,16 +17,6 @@ export default function Index() {
     Montserrat_600SemiBold,
     Montserrat_500Medium_Italic,
   });
-  const { isDbReady } = useDatabase();
-
-  useEffect(() => {
-    if (isDbReady) {
-      console.log("Database is ready.");
-      // loadQuizzes();
-    } else {
-      console.log("Database is not ready.");
-    }
-  }, [isDbReady]);
 
   if (!fontsLoaded) {
     return <Text>Loading fonts...</Text>;

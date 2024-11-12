@@ -1,14 +1,9 @@
 import { useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-} from "react-native";
-import { Link } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { SafeAreaView, View, TouchableOpacity, Modal } from "react-native";
+import { router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
+import { ThemedTextInput } from "../components/ThemedTextInput";
+import { ModalAlert } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
 import { COLORS } from "../constants/theme";
 
@@ -24,14 +19,25 @@ export default function CreateQuiz() {
   const handleCreateQuiz = async () => {
     try {
       const quizId = await createQuiz(name, description);
-      console.log("Quiz created with ID:", quizId); //type returned is number
       setQuizId(quizId as number);
       setModalVisible(true);
 
       // Clear input fields
       setName("");
       setDescription("");
+      // Hide the modal after 1 second
+      const timer = setTimeout(() => {
+        setModalVisible(false);
+        setErrorCreate(false);
+        router.push({
+          pathname: "./CreateQuestion",
+          params: { quizId: quizId as number },
+        });
+      }, 1000);
 
+
+      // Clean up the timer when the component unmounts or the state changes
+      return () => clearTimeout(timer);
     } catch (error) {
       console.error("Error creating quiz:", error);
       setErrorCreate(true);
@@ -63,7 +69,7 @@ export default function CreateQuiz() {
               marginVertical: 15,
             }}
           >
-            <ThemedText variant="h3">Create Quiz</ThemedText>
+            <ThemedText variant="h3" style={{ textAlign: "center" }}>Create Quiz</ThemedText>
           </View>
           {/* input name field */}
           <View style={{ width: "100%" }}>
@@ -79,23 +85,10 @@ export default function CreateQuiz() {
               Name
             </ThemedText>
           </View>
-          <TextInput
+          <ThemedTextInput
             value={name}
-            multiline
             placeholder="Enter quiz name..."
-            style={{
-              width: "100%",
-              borderRadius: 10,
-              padding: 15,
-              fontSize: 20,
-              backgroundColor: COLORS.white,
-            }}
-            autoCapitalize="words"
-            autoCorrect={false}
-            placeholderTextColor={COLORS.black}
-            onChangeText={(text) => {
-              setName(text);
-            }}
+            handleChange={setName}
           />
           {/* input description field */}
           <View style={{ width: "100%" }}>
@@ -111,23 +104,10 @@ export default function CreateQuiz() {
               Description
             </ThemedText>
           </View>
-          <TextInput
+          <ThemedTextInput
             value={description}
-            multiline
             placeholder="Enter quiz description..."
-            style={{
-              width: "100%",
-              borderRadius: 10,
-              padding: 15,
-              fontSize: 20,
-              backgroundColor: COLORS.white,
-            }}
-            autoCapitalize="words"
-            autoCorrect={false}
-            placeholderTextColor={COLORS.black}
-            onChangeText={(text) => {
-              setDescription(text);
-            }}
+            handleChange={setDescription}
           />
         </View>
 
@@ -149,65 +129,12 @@ export default function CreateQuiz() {
           <ThemedText variant="h3">Generate Quiz</ThemedText>
         </TouchableOpacity>
       </View>
-      <Modal animationType="slide" visible={modalVisible} transparent={true}>
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 20,
-              height: 200,
-              width: 200,
-              backgroundColor: COLORS.white,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <ThemedText>Quiz created successfully !</ThemedText>
-            {!errorCreate ? (
-              <Link
-                href={{
-                  pathname: "./CreateQuestion",
-                  params: { quizId: quizId },
-                }}
-                asChild
-              >
-                <TouchableOpacity
-                  style={{ marginTop: 20 }}
-                  onPress={() => {
-                    setModalVisible(false);
-                    setErrorCreate(false);
-                  }}
-                >
-                  <AntDesign
-                    name={errorCreate ? "closecircle" : "checkcircle"}
-                    size={50}
-                    color={errorCreate ? COLORS.error : COLORS.success}
-                  />
-                </TouchableOpacity>
-              </Link>
-            ) : (
-              <TouchableOpacity
-                style={{ marginTop: 20 }}
-                onPress={() => {
-                  setModalVisible(false);
-                  setErrorCreate(false);
-                }}
-              >
-                <AntDesign name="closecircle" size={50} color={COLORS.error} />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </Modal>
+
+      <ModalAlert
+        message="Quiz created successfully!"
+        modalVisible={modalVisible}
+        errorCreate={errorCreate}
+      />
     </SafeAreaView>
   );
 }

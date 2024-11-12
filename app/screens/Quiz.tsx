@@ -1,13 +1,18 @@
 import { useState, useCallback, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   SafeAreaView,
   View,
   TouchableOpacity,
   Dimensions,
   Modal,
+  Animated,
+  useAnimatedValue,
+  Easing,
 } from "react-native";
 import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ThemedText } from "../components/ThemedText";
 import { useDatabase } from "../useDatabase";
 import { COLORS } from "../constants/theme";
@@ -21,10 +26,15 @@ export default function Quiz() {
     string | null
   >(null);
   const [correctOption, setCorrectOption] = useState<string | null>(null);
+  const [isSelected, setIsSelected] = useState(false);
   const [score, setScore] = useState(0);
   const [showScoreModal, setShowScoreModal] = useState(false);
   const { isDbReady, getQuestions } = useDatabase();
   const { width } = Dimensions.get("window");
+  const [containerWidth, setContainerWidth] = useState(0);
+    const progress = useAnimatedValue(0);
+
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
@@ -37,10 +47,19 @@ export default function Quiz() {
   useEffect(() => {
     const currentQuestion = allQuestions[currentQuestionIndex];
     if (currentQuestion) {
-      const options = JSON.parse(currentQuestion["options"]);
+      const options = [
+        ...JSON.parse(currentQuestion["options"]),
+        currentQuestion["correct_answer"],
+      ];
       setShuffledOptions(shuffleArray(options));
     }
-  }, [currentQuestionIndex, allQuestions]);
+    const unsubscribe = navigation.addListener("blur", () => {
+      // Do something when the screen blurs
+      restartQuiz();
+    });
+
+    return unsubscribe;
+  }, [currentQuestionIndex, allQuestions, navigation]);
 
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -55,7 +74,6 @@ export default function Quiz() {
       const loadedQuestions = await getQuestions(Number(quizId));
       const shuffledQuestions = shuffleArray(loadedQuestions);
       setAllQuestions(shuffledQuestions);
-      // setAllQuestions(loadedQuestions);
     } catch (error) {
       console.error("Error loading questions:", error);
     }
@@ -63,8 +81,9 @@ export default function Quiz() {
 
   const validateAnswer = (selectedOption: string) => {
     let correct_answer = allQuestions[currentQuestionIndex]?.["correct_answer"];
-    setCurrentOptionSelected(selectedOption);
     setCorrectOption(correct_answer);
+    setCurrentOptionSelected(selectedOption);
+    setIsSelected(true);
     if (selectedOption === correct_answer) {
       setScore(score + 1);
     }
@@ -79,6 +98,13 @@ export default function Quiz() {
       setCurrentOptionSelected(null);
       setCorrectOption(null);
     }
+    setIsSelected(false);
+    Animated.timing(progress, {
+      toValue: currentQuestionIndex + 1,
+      duration: 1000,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.exp),
+    }).start();
   };
 
   const renderQuestion = () => {
@@ -108,10 +134,7 @@ export default function Quiz() {
             / {allQuestions.length}
           </ThemedText>
         </View>
-        <ThemedText
-          variant="h2"
-          color={COLORS.white}
-        >
+        <ThemedText variant="h2" color={COLORS.white}>
           {allQuestions[currentQuestionIndex]?.["question_text"]}
         </ThemedText>
       </View>
@@ -134,8 +157,9 @@ export default function Quiz() {
       <View style={{ width: "100%" }}>
         {shuffledOptions.map((option: string) => (
           <TouchableOpacity
-            onPress={() => validateAnswer(option)}
             key={option}
+            onPress={() => validateAnswer(option)}
+            disabled={isSelected}
             style={{
               borderRadius: 20,
               backgroundColor:
@@ -158,7 +182,8 @@ export default function Quiz() {
                   ? COLORS.white
                   : option == currentOptionSelected
                   ? COLORS.white
-                  : COLORS.black}
+                  : COLORS.black
+              }
               style={{
                 fontSize: width * 0.06,
               }}
@@ -177,6 +202,7 @@ export default function Quiz() {
     setCurrentQuestionIndex(0);
     setCurrentOptionSelected(null);
     setCorrectOption(null);
+    progress.setValue(0);
     const shuffledQuestions = shuffleArray(allQuestions);
     setAllQuestions(shuffledQuestions);
   };
@@ -190,16 +216,80 @@ export default function Quiz() {
     router.back();
   };
 
+  const renderProgressBar = () => {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            height: 20,
+            borderRadius: 20,
+            backgroundColor: COLORS.white,
+            overflow: "hidden",
+          }}
+          onLayout={(event) => {
+            const { width } = event.nativeEvent.layout;
+            setContainerWidth(width); // Get the actual width of parent container
+          }}
+        >
+          <Animated.View
+            style={[
+              {
+                position: "absolute",
+                width: "100%",
+                backgroundColor: COLORS.progress,
+                height: 20,
+                borderRadius: 20,
+                transform: [
+                  {
+                    translateX: progress.interpolate({
+                      inputRange: [0, allQuestions.length],
+                      outputRange: [-containerWidth, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={() => restartQuiz()}
+          style={{ padding: 5 }}
+        >
+          <MaterialCommunityIcons name="restart" size={35} color={COLORS.dark_grey} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
+      {/* Progress Bar */}
+      <View
+        style={{
+          width: "100%",
+          height: 80,
+          paddingHorizontal: 20,
+        }}
+      >
+        {renderProgressBar()}
+      </View>
       <View
         style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: COLORS.background,
           position: "relative",
           paddingHorizontal: 20,
+          backgroundColor: COLORS.background,
           opacity: showScoreModal ? 0.2 : 1,
         }}
       >
@@ -235,15 +325,19 @@ export default function Quiz() {
                 {score} out of {allQuestions.length}
               </ThemedText>
               <AntDesign
-                    name={score != allQuestions.length ? "closecircle" : "checkcircle"}
-                    color={score != allQuestions.length ? COLORS.error : COLORS.success}
-                    size={50}
-                    style={{ marginBottom: 20 }}
-                  />
+                name={
+                  score != allQuestions.length ? "closecircle" : "checkcircle"
+                }
+                color={
+                  score != allQuestions.length ? COLORS.error : COLORS.success
+                }
+                size={50}
+                style={{ marginBottom: 20 }}
+              />
               <TouchableOpacity
                 onPress={() => backToList()}
                 style={{
-                  backgroundColor: COLORS.create,
+                  backgroundColor: COLORS.explore,
                   width: "100%",
                   padding: 20,
                   borderRadius: 20,
@@ -261,7 +355,7 @@ export default function Quiz() {
               <TouchableOpacity
                 onPress={() => restartQuiz()}
                 style={{
-                  backgroundColor: COLORS.accent,
+                  backgroundColor: COLORS.create,
                   width: "100%",
                   padding: 20,
                   borderRadius: 20,
@@ -271,7 +365,6 @@ export default function Quiz() {
                   style={{
                     textAlign: "center",
                   }}
-                  color={COLORS.white}
                 >
                   Restart
                 </ThemedText>
