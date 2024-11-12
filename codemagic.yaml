@@ -15,9 +15,8 @@ workflows:
             script: | 
               cd android
               ./gradlew bundleRelease
-
-          artifacts:
-        - android/app/build/outputs/**/*.aab
+        artifacts:
+          - android/app/build/outputs/**/*.aab
     ios-workflow-id:
         name: iOS Sample Workflow
         environment:
