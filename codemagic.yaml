@@ -20,11 +20,10 @@ workflows:
     ios-workflow-id:
         name: iOS Sample Workflow
         environment:
-        groups:
-        vars:
-          BUNDLE_ID: "com.kabotan.Quizium"
-          XCODE_WORKSPACE: "Quizium.xcworkspace" # <-- Name of your Xcode workspace
-          XCODE_SCHEME: "Quizium" # <-- Name of your Xcode scheme
+          vars:
+            BUNDLE_ID: "com.kabotan.Quizium"
+            XCODE_WORKSPACE: "Quizium.xcworkspace" # <-- Name of your Xcode workspace
+            XCODE_SCHEME: "Quizium" # <-- Name of your Xcode scheme
         scripts:
           - name: Build ipa for distribution
             script: | 
