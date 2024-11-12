@@ -17,8 +17,8 @@ workflows:
             cd android
             ./gradlew bundleRelease
 
-artifacts:
-  - android/app/build/outputs/**/*.aab
+          artifacts:
+        - android/app/build/outputs/**/*.aab
     ios-workflow-id:
         name: iOS Sample Workflow
         environment:
@@ -27,14 +27,14 @@ artifacts:
           BUNDLE_ID: "com.kabotan.Quizium"
           XCODE_WORKSPACE: "Quizium.xcworkspace" # <-- Name of your Xcode workspace
           XCODE_SCHEME: "Quizium" # <-- Name of your Xcode scheme
-    scripts:
-      - name: Build ipa for distribution
-        script: | 
-          xcode-project build-ipa \
-            --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        scripts:
+          - name: Build ipa for distribution
+            script: | 
+              xcode-project build-ipa \
+                --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+                --scheme "$XCODE_SCHEME"
+        artifacts:
+          - build/ios/ipa/*.ipa
+          - /tmp/xcodebuild_logs/*.log
+          - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+          - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
