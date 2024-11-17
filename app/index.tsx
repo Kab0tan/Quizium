@@ -29,6 +29,7 @@ export default function Index() {
         alignItems: "center",
         backgroundColor: COLORS.background,
         padding: 20,
+        flexDirection: "column",
       }}
     >
       <View style={{ flexDirection: "row", gap: 15 }}>
@@ -78,6 +79,7 @@ export default function Index() {
             </View>
           </TouchableOpacity>
         </Link>
+
       </View>
     </View>
   );

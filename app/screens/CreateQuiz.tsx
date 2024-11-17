@@ -3,23 +3,25 @@ import { SafeAreaView, View, TouchableOpacity, Modal } from "react-native";
 import { router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedTextInput } from "../components/ThemedTextInput";
+import { FileReaderButton } from "../components/FileReader";
 import { ModalAlert } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
 import { COLORS } from "../constants/theme";
+import { addQuestion } from "../database";
 
 export default function CreateQuiz() {
-  const [quizId, setQuizId] = useState(0);
+  // const [quizId, setQuizId] = useState(0);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [errorCreate, setErrorCreate] = useState(false);
+  const [fileContent, setFileContent] = useState<any | null>(null);
+  const { createQuiz, addQuestion, addMultipleQuestion } = useDatabase();
 
-  const { createQuiz } = useDatabase();
-
-  const handleCreateQuiz = async () => {
+  const handleManualCreation = async () => {
     try {
-      const quizId = await createQuiz(name, description);
-      setQuizId(quizId as number);
+      const quizId_ = await createQuiz(name, description);
+      // setQuizId(quizId_ as number);
       setModalVisible(true);
 
       // Clear input fields
@@ -31,10 +33,9 @@ export default function CreateQuiz() {
         setErrorCreate(false);
         router.push({
           pathname: "./CreateQuestion",
-          params: { quizId: quizId as number },
+          params: { quizId: quizId_ as number },
         });
       }, 1000);
-
 
       // Clean up the timer when the component unmounts or the state changes
       return () => clearTimeout(timer);
@@ -42,6 +43,54 @@ export default function CreateQuiz() {
       console.error("Error creating quiz:", error);
       setErrorCreate(true);
     }
+  };
+
+  const handleAutomaticCreation = async (content: any) => {
+    try {
+      const quizId_ = await createQuiz(name, description);
+      console.log("content.data", content);
+      for (const item of content) {
+        console.log(item);
+        // Convert options to an array if it's a single string
+        let optionsArray = item["options"]
+          .split(",")
+          .map((item: string) => item.trim());
+        await addQuestion(
+          quizId_ as number,
+          item["question"],
+          item["correct_answer"],
+          optionsArray
+        );
+      }
+      setModalVisible(true);
+
+      // Clear input fields
+      setName("");
+      setDescription("");
+      // Hide the modal after 1 second
+      const timer = setTimeout(() => {
+        setModalVisible(false);
+        setErrorCreate(false);
+      }, 1000);
+
+      // Clean up the timer when the component unmounts or the state changes
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error("Error creating quiz:", error);
+      setErrorCreate(true);
+    }
+  };
+
+  const handleCreateQuiz = async () => {
+    if (fileContent) {
+      handleAutomaticCreation(fileContent);
+    } else {
+      handleManualCreation();
+    }
+  };
+
+  const handleFileContent = (content: object) => {
+    setFileContent(content);
   };
 
   return (
@@ -69,7 +118,9 @@ export default function CreateQuiz() {
               marginVertical: 15,
             }}
           >
-            <ThemedText variant="h3" style={{ textAlign: "center" }}>Create Quiz</ThemedText>
+            <ThemedText variant="h3" style={{ textAlign: "center" }}>
+              Create Quiz
+            </ThemedText>
           </View>
           {/* input name field */}
           <View style={{ width: "100%" }}>
@@ -109,6 +160,22 @@ export default function CreateQuiz() {
             placeholder="Enter quiz description..."
             handleChange={setDescription}
           />
+
+          {/* file reader */}
+          <View style={{ width: "100%" }}>
+            <ThemedText
+              variant="body"
+              color="white"
+              style={{
+                marginTop: 30,
+                marginBottom: 5,
+                alignSelf: "flex-start",
+              }}
+            >
+              Create from CSV/TXT file (optional)
+            </ThemedText>
+            <FileReaderButton onFileread={handleFileContent} />
+          </View>
         </View>
 
         {/* validation button  */}

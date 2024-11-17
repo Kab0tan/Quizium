@@ -44,17 +44,27 @@ export const setupDatabase = () => {
 };
 
 // Quiz CRUD Operations
-export const createQuiz = (title: string, description: string) => {
-  return new Promise((resolve, reject) => {
-    db.withTransactionAsync(async () => {
-      const result = await db.runAsync(
-        "INSERT INTO quizzes (title, description) VALUES (?, ?)",
-        title,
-        description
-      );
-      resolve(result.lastInsertRowId);
-    });
-  });
+// export const createQuiz = (title: string, description: string) => {
+//   return new Promise((resolve, reject) => {
+//       db.withTransactionAsync(async () => {
+//         const result = await db.runAsync(
+//           "INSERT INTO quizzes (title, description) VALUES (?, ?)",
+//           title,
+//           description
+//         );
+//         console.log("Quiz added in quizzes table: " + result.lastInsertRowId);
+//         resolve(result.lastInsertRowId);
+//       });
+//   });
+// };
+export const createQuiz = async (title: string, description: string) => {
+  const result = await db.runAsync(
+    "INSERT INTO quizzes (title, description) VALUES (?, ?)",
+    title,
+    description
+  );
+  console.log("Quiz added in quizzes table: " + result.lastInsertRowId);
+  return result.lastInsertRowId;
 };
 
 export const getQuizzes = () => {
@@ -125,33 +135,97 @@ export const getQuestions = (quizId: number) => {
     });
 };
 
-export const addQuestion = (
+// export const addQuestion = async (
+//   quizId: number,
+//   questionText: string,
+//   correctAnswer: string,
+//   options: string[]
+// ) => {
+//   return new Promise((resolve, reject) => {
+//     db.withTransactionAsync(async () => {
+//       const result = await db.runAsync(
+//         "INSERT INTO questions (quiz_id, question_text, correct_answer, options) VALUES (?, ?, ?, ?)",
+//         quizId,
+//         questionText,
+//         correctAnswer,
+//         JSON.stringify(options) // Convert array to JSON string
+//       );
+//       resolve(result.lastInsertRowId);
+//     });
+//   })
+//     .then((value) => {
+//       console.log("Question added in questions table: " + value);
+//     })
+//     .catch((error) => {
+//       console.error("Question added in questions table: " + error);
+//     });
+// };
+
+export const addQuestion = async (
   quizId: number,
   questionText: string,
   correctAnswer: string,
   options: string[]
-) => {
-  return new Promise((resolve, reject) => {
-    db.withTransactionAsync(async () => {
-      const result = await db.runAsync(
-        "INSERT INTO questions (quiz_id, question_text, correct_answer, options) VALUES (?, ?, ?, ?)",
-        quizId,
-        questionText,
-        correctAnswer,
-        JSON.stringify(options) // Convert array to JSON string
-      );
-      resolve(result.lastInsertRowId);
+): Promise<number> => {
+  try {
+    const result = await new Promise((resolve, reject) => {
+      db.withTransactionAsync(async () => {
+        try {
+          const result = await db.runAsync(
+            "INSERT INTO questions (quiz_id, question_text, correct_answer, options) VALUES (?, ?, ?, ?)",
+            quizId,
+            questionText,
+            correctAnswer,
+            JSON.stringify(options)
+          );
+          resolve(result.lastInsertRowId);
+        } catch (error) {
+          reject(error);
+        }
+      });
     });
-  })
-    .then((value) => {
-      console.log("Question added in questions table: " + value);
-    })
-    .catch((error) => {
-      console.error("Question added in questions table: " + error);
-    });
+    return result as number;
+  } catch (error) {
+    console.error("Error adding question:", error);
+    throw error;
+  }
 };
 
-export const updateQuestion = (id: number, question_text: string, correct_answer: string, options: string[]) => {
+export const addMultipleQuestion = async (
+  quizId: number,
+  content: any
+): Promise<number> => {
+  try {
+    const result = await new Promise(async (resolve, reject) => {
+      const statement = await db.prepareAsync(
+        "INSERT INTO questions (quiz_id, question_text, correct_answer, options) VALUES ($quizId, $questionText, $correctAnswer, $options)"
+      );
+      try {
+        for (const item of content) {
+          await statement.executeAsync({
+            $quizId: quizId,
+            $questionText: item["question"],
+            $correctAnswer: item["correct_answer"],
+            $options: JSON.stringify(item["options"]),
+          });
+        }
+      } finally {
+        await statement.finalizeAsync();
+      }
+    });
+    return result as number;
+  } catch (error) {
+    console.error("Error adding question:", error);
+    throw error;
+  }
+};
+
+export const updateQuestion = (
+  id: number,
+  question_text: string,
+  correct_answer: string,
+  options: string[]
+) => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       await db.runAsync(
@@ -162,7 +236,6 @@ export const updateQuestion = (id: number, question_text: string, correct_answer
     });
   });
 };
-
 
 export const deleteQuestion = (id: number) => {
   return new Promise((resolve, reject) => {
