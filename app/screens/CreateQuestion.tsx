@@ -12,10 +12,12 @@ export default function CreateQuestion() {
   const [question, setQuestion] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [options, setOptions] = useState(["", "", ""]);
+  const [questionValid, setQuestionValid] = useState(true);
+  const [correctAnswerValid, setCorrectAnswerValid] = useState(true);
+  const [optionsValid, setOptionsValid] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [errorAdding, setErrorAdding] = useState(false);
   const { quizId } = useLocalSearchParams();
-
   const { addQuestion } = useDatabase();
 
   useFocusEffect(
@@ -29,26 +31,41 @@ export default function CreateQuestion() {
     }, [quizId])
   );
 
+
   const handleAddingQuestion = async () => {
-    try {
-      await addQuestion(Number(quizId), question, correctAnswer, options);
-      setModalVisible(true);
+    const questionEmpty = !question;
+    const correctAnswerEmpty = !correctAnswer;
+    const optionsEmpty = options.some((option) => !option);
+    if (questionEmpty) {
+      setQuestionValid(false);
+    }
+    if (correctAnswerEmpty) {
+      setCorrectAnswerValid(false);
+    }
+    if (optionsEmpty) {
+      setOptionsValid(false);
+    }
+    if (!questionEmpty && !correctAnswerEmpty && !optionsEmpty) {
+      try {
+        await addQuestion(Number(quizId), question, correctAnswer, options);
+        setModalVisible(true);
 
-      // Hide the modal after 1 second
-      const timer = setTimeout(() => {
-        setModalVisible(false);
-        setErrorAdding(false);
-        router.push({
-          pathname: "./ListQuestions",
-          params: { quizId: Number(quizId) },
-        });
-      }, 1000);
+        // Hide the modal after 1 second
+        const timer = setTimeout(() => {
+          setModalVisible(false);
+          setErrorAdding(false);
+          router.push({
+            pathname: "./ListQuestions",
+            params: { quizId: Number(quizId) },
+          });
+        }, 1000);
 
-      // Clean up the timer when the component unmounts or the state changes
-      return () => clearTimeout(timer);
-    } catch (error) {
-      console.error("Error adding question:", error);
-      setErrorAdding(true);
+        // Clean up the timer when the component unmounts or the state changes
+        return () => clearTimeout(timer);
+      } catch (error) {
+        console.error("Error adding question:", error);
+        setErrorAdding(true);
+      }
     }
   };
 
@@ -80,7 +97,9 @@ export default function CreateQuestion() {
                 alignContent: "center",
               }}
             >
-              <ThemedText variant="h3" style={{ textAlign: "center" }}>Create Question</ThemedText>
+              <ThemedText variant="h3" style={{ textAlign: "center" }}>
+                Create Question
+              </ThemedText>
             </View>
 
             {/* input Question field */}
@@ -108,7 +127,16 @@ export default function CreateQuestion() {
                 <ThemedTextInput
                   value={question}
                   placeholder="Enter quiz Question..."
-                  handleChange={setQuestion}
+                  placeholderTextColor={
+                    questionValid ? COLORS.dark_grey : COLORS.light_error
+                  }
+                  handleChange={(question) => {
+                    setQuestion(question);
+                    setQuestionValid(true);
+                  }}
+                  style={
+                    questionValid ? {} : { borderColor: COLORS.light_error }
+                  }
                 />
               </View>
               <TouchableOpacity
@@ -142,7 +170,16 @@ export default function CreateQuestion() {
             <ThemedTextInput
               value={correctAnswer}
               placeholder="Enter correct answer..."
-              handleChange={setCorrectAnswer}
+              placeholderTextColor={
+                correctAnswerValid ? COLORS.dark_grey : COLORS.light_error
+              }
+              handleChange={(corrAnswer) => {
+                setCorrectAnswer(corrAnswer);
+                setCorrectAnswerValid(true);
+              }}
+              style={
+                correctAnswerValid ? {} : { borderColor: COLORS.light_error }
+              }
             />
             {/* input options field */}
             {options.map((option, index) => (
@@ -155,16 +192,24 @@ export default function CreateQuestion() {
                     alignSelf: "flex-start",
                   }}
                 >
-                  Option {index + 1}
+                  Wrong answer {index + 1}
                 </ThemedText>
                 <ThemedTextInput
                   value={option}
-                  placeholder={`Option ${index + 1}...`}
+                  placeholder={`Enter wrong answer ${index + 1}...`}
+                  placeholderTextColor={
+                    optionsValid ? COLORS.dark_grey : COLORS.light_error
+                  }
                   handleChange={(text) => {
                     const newOptions = [...options];
                     newOptions[index] = text;
                     setOptions(newOptions);
+                    if (newOptions.every((opt) => opt !== ""))
+                      setOptionsValid(true);
                   }}
+                  style={
+                    optionsValid ? {} : { borderColor: COLORS.light_error }
+                  }
                 />
               </View>
             ))}

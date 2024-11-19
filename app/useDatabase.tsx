@@ -20,7 +20,6 @@ export const useDatabase = () => {
     deleteQuiz: db.deleteQuiz,
     getQuestions: db.getQuestions,
     addQuestion: db.addQuestion,
-    addMultipleQuestion: db.addMultipleQuestion,
     updateQuestion: db.updateQuestion,
     deleteQuestion: db.deleteQuestion,
   };

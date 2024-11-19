@@ -1,13 +1,14 @@
-import { TextInput, StyleSheet } from "react-native";
+import { TextInput, StyleSheet, type TextInputProps } from "react-native";
 import { COLORS } from "../constants/theme";
 
 const styles = StyleSheet.create({
   body: {
     width: "100%",
     borderRadius: 10,
-    padding: 10,
+    padding: 12,
     fontSize: 20,
     backgroundColor: COLORS.white,
+    borderWidth: 3
   },
   searchBar: {
     width: "100%",
@@ -16,7 +17,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type Prop = {
+type Prop = TextInputProps & {
   value?: string;
   placeholder?: string;
   handleChange: (t: string) => void;
@@ -27,6 +28,7 @@ export function ThemedTextInput({
   placeholder,
   handleChange,
   variant,
+  style,
   ...rest
 }: Prop) {
   return (
@@ -35,7 +37,7 @@ export function ThemedTextInput({
       placeholder={placeholder}
       placeholderTextColor= {COLORS.dark_grey}
       multiline
-      style={styles[variant ?? "body"]}
+      style={[styles[variant ?? "body"], style]}
       autoCapitalize="sentences"
       autoCorrect={false}
       onChangeText={handleChange}

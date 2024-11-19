@@ -78,7 +78,7 @@ export default function RootLayout() {
         options={{
           title: "",
           headerLeft: () => (
-            <BackPressable pathname="./ListQuestions" />
+            <BackPressable useBack={true} />
           ),
           animation:ANIMATION
         }}

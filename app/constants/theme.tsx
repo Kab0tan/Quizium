@@ -2,6 +2,7 @@ export const COLORS = {
   background: "#252C4A",
   success: "#00E51D",
   error: "#FF0101",
+  light_error: "#FF6464",
   progress: "#00E51D",
 
   black: "#171717",
@@ -16,6 +17,8 @@ export const COLORS = {
   black_70: "rgba(0, 0, 0, 0.7)",
   black_80: "rgba(0, 0, 0, 0.8)",
   black_90: "rgba(0, 0, 0, 0.9)",
+
+
 
   create: "#b0f2b6",
   explore: "#BDEBFF",

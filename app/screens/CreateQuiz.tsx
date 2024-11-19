@@ -10,14 +10,14 @@ import { COLORS } from "../constants/theme";
 import { addQuestion } from "../database";
 
 export default function CreateQuiz() {
-  // const [quizId, setQuizId] = useState(0);
   const [name, setName] = useState("");
+  const [nameValid, setNameValid] = useState(true);
   const [description, setDescription] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [errorCreate, setErrorCreate] = useState(false);
   const [fileContent, setFileContent] = useState<any | null>(null);
-  const { createQuiz, addQuestion, addMultipleQuestion } = useDatabase();
-
+  const { createQuiz, addQuestion } = useDatabase();
+  
   const handleManualCreation = async () => {
     try {
       const quizId_ = await createQuiz(name, description);
@@ -48,9 +48,7 @@ export default function CreateQuiz() {
   const handleAutomaticCreation = async (content: any) => {
     try {
       const quizId_ = await createQuiz(name, description);
-      console.log("content.data", content);
       for (const item of content) {
-        console.log(item);
         // Convert options to an array if it's a single string
         let optionsArray = item["options"]
           .split(",")
@@ -71,6 +69,10 @@ export default function CreateQuiz() {
       const timer = setTimeout(() => {
         setModalVisible(false);
         setErrorCreate(false);
+        router.push({
+          pathname: "./ListQuestions",
+          params: { quizId: quizId_ as number },
+        });
       }, 1000);
 
       // Clean up the timer when the component unmounts or the state changes
@@ -82,10 +84,15 @@ export default function CreateQuiz() {
   };
 
   const handleCreateQuiz = async () => {
-    if (fileContent) {
-      handleAutomaticCreation(fileContent);
+    if (name) {
+      setNameValid(true);
+      if (fileContent.length > 0) { 
+        handleAutomaticCreation(fileContent);
+      } else {
+        handleManualCreation();
+      }
     } else {
-      handleManualCreation();
+      setNameValid(false);
     }
   };
 
@@ -139,7 +146,12 @@ export default function CreateQuiz() {
           <ThemedTextInput
             value={name}
             placeholder="Enter quiz name..."
-            handleChange={setName}
+            placeholderTextColor={nameValid ? COLORS.dark_grey : COLORS.light_error}
+            handleChange={(text) => {
+              setName(text);
+              setNameValid(true);
+            }}
+            style={ nameValid ? {} : { borderColor: COLORS.light_error  } }
           />
           {/* input description field */}
           <View style={{ width: "100%" }}>
@@ -152,7 +164,7 @@ export default function CreateQuiz() {
                 alignSelf: "flex-start",
               }}
             >
-              Description
+              Description (optional)
             </ThemedText>
           </View>
           <ThemedTextInput

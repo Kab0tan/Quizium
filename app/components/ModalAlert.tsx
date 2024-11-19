@@ -1,5 +1,4 @@
 import { Modal, View, TouchableOpacity } from "react-native";
-import { Href, Link } from "expo-router";
 import { ThemedText } from "./ThemedText";
 import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";

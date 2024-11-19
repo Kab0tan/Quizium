@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Montserrat_500Medium_Italic",
   }
+  
 });
 
 type Prop = TextProps & {

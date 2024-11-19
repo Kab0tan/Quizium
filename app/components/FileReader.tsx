@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { View, TouchableOpacity, Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { readString } from "react-native-csv";
 import { ThemedText } from "./ThemedText";
-import { COLORS } from "../constants/theme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { AntDesign } from "@expo/vector-icons";
+import { COLORS } from "../constants/theme";
 
 type Prop = {
   onFileread?: (content: any) => void;
@@ -31,7 +32,6 @@ export function FileReaderButton({ onFileread }: Prop) {
       });
 
       if (result.canceled) {
-        console.log("User cancelled the picker");
         return;
       }
 
@@ -48,18 +48,16 @@ export function FileReaderButton({ onFileread }: Prop) {
       } else {
         // For TXT files, show the content as is
         const parsedContent = readString(content, { header: true });
-        
+
         // Filter out invalid or empty questions, we only return key data
         const validContent = (parsedContent.data as DataItem[]).filter(
           (item: DataItem) => Boolean(item?.question?.trim())
         );
-        console.log("validContent", validContent);
         if (onFileread) onFileread(validContent);
       }
       Alert.alert("Success", "File read successfully!");
     } catch (err) {
       Alert.alert("Error", "An error occurred while reading the file");
-      console.log("Error: ", err);
     } finally {
       setIsLoading(false);
     }
@@ -86,9 +84,24 @@ export function FileReaderButton({ onFileread }: Prop) {
 
       {/* Filename */}
       {fileName && (
-        <ThemedText style={{ marginTop: 10 }} color={COLORS.white}>
-          File: {fileName}
-        </ThemedText>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 10,
+            alignItems: "center",
+            marginTop: 10,
+          }}
+        >
+          <ThemedText color={COLORS.white}>File: {fileName}</ThemedText>
+          <TouchableOpacity
+            onPress={() => {
+              setFileName("");
+              onFileread?.([]);
+            }}
+          >
+            <AntDesign name="closecircle" size={15} color={COLORS.error} />
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
