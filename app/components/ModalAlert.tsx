@@ -11,8 +11,13 @@ type Prop = {
   messageDelete?: string;
   handleDelete?: () => void;
   handleCancel?: () => void;
+  modalInfoVisible?: boolean;
+  messageInfoTitle?: string;
+  messageInfoContent?: string;
+  handleClose?: () => void;
 };
 
+// modal to quickly alert during creation
 export function ModalAlert({ message, modalVisible, errorCreate }: Prop) {
   return (
     <Modal animationType="slide" visible={modalVisible} transparent={true}>
@@ -36,7 +41,7 @@ export function ModalAlert({ message, modalVisible, errorCreate }: Prop) {
           }}
         >
           {!errorCreate ? (
-            <ThemedText style={{textAlign: 'center'}}>{message}</ThemedText>
+            <ThemedText style={{ textAlign: "center" }}>{message}</ThemedText>
           ) : (
             <ThemedText>Error creating element</ThemedText>
           )}
@@ -61,6 +66,7 @@ export function ModalAlert({ message, modalVisible, errorCreate }: Prop) {
   );
 }
 
+// modal to alert for deletion
 export function ModalDelete({
   modalDeleteVisible,
   messageDelete,
@@ -115,13 +121,82 @@ export function ModalDelete({
               gap: 10,
             }}
           >
-            <TouchableOpacity style={{}} onPress={handleCancel}>
+            <TouchableOpacity onPress={handleCancel}>
               <ThemedText color={COLORS.dark_grey}>Cancel</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity style={{}} onPress={handleDelete}>
+            <TouchableOpacity onPress={handleDelete}>
               <ThemedText color={COLORS.delete}>Delete</ThemedText>
             </TouchableOpacity>
           </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+export function ModalInfo({
+  modalInfoVisible,
+  messageInfoTitle,
+  messageInfoContent,
+  handleClose,
+}: Prop) {
+  return (
+    <Modal animationType="slide" visible={modalInfoVisible} transparent={true}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 20,
+            borderRadius: 20,
+            width: 300,
+            backgroundColor: COLORS.white,
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 4,
+            elevation: 5,
+            position: "relative", // Added to position the close button
+          }}
+        >
+          {/* Close Button */}
+          <TouchableOpacity
+            onPress={handleClose}
+            style={{
+              position: "absolute",
+              right: 10,
+              top: 10,
+              zIndex: 1,
+              padding: 5,
+            }}
+          >
+            <AntDesign name="close" size={24} color={COLORS.black} />
+          </TouchableOpacity>
+
+          <ThemedText variant="h3" color={COLORS.black}>
+            {messageInfoTitle}
+          </ThemedText>
+          <ThemedText color={COLORS.dark_grey} style={{ marginVertical: 10 }}>
+            {messageInfoContent}
+          </ThemedText>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              marginTop: 20,
+              gap: 10,
+            }}
+          ></View>
         </View>
       </View>
     </Modal>

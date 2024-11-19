@@ -4,32 +4,33 @@ import { router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedTextInput } from "../components/ThemedTextInput";
 import { FileReaderButton } from "../components/FileReader";
-import { ModalAlert } from "../components/ModalAlert";
+import { ModalAlert, ModalInfo } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
+import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
-import { addQuestion } from "../database";
 
 export default function CreateQuiz() {
   const [name, setName] = useState("");
   const [nameValid, setNameValid] = useState(true);
   const [description, setDescription] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalAlertVisible, setModalAlertVisible] = useState(false);
+  const [modalInfoVisible, setModalInfoVisible] = useState(false);
   const [errorCreate, setErrorCreate] = useState(false);
   const [fileContent, setFileContent] = useState<any | null>(null);
   const { createQuiz, addQuestion } = useDatabase();
-  
+
   const handleManualCreation = async () => {
     try {
       const quizId_ = await createQuiz(name, description);
       // setQuizId(quizId_ as number);
-      setModalVisible(true);
+      setModalAlertVisible(true);
 
       // Clear input fields
       setName("");
       setDescription("");
       // Hide the modal after 1 second
       const timer = setTimeout(() => {
-        setModalVisible(false);
+        setModalAlertVisible(false);
         setErrorCreate(false);
         router.push({
           pathname: "./CreateQuestion",
@@ -50,9 +51,14 @@ export default function CreateQuiz() {
       const quizId_ = await createQuiz(name, description);
       for (const item of content) {
         // Convert options to an array if it's a single string
-        let optionsArray = item["options"]
+        let optionsArray = item["other_choices"]
           .split(",")
           .map((item: string) => item.trim());
+        // Check if item["correct_answer"] is in the list of other_choices and remove it if found
+        const corrIndex = optionsArray.indexOf(item["correct_answer"]);
+        if (corrIndex !== -1) {
+          optionsArray.splice(corrIndex, 1);
+        }
         await addQuestion(
           quizId_ as number,
           item["question"],
@@ -60,14 +66,14 @@ export default function CreateQuiz() {
           optionsArray
         );
       }
-      setModalVisible(true);
+      setModalAlertVisible(true);
 
       // Clear input fields
       setName("");
       setDescription("");
       // Hide the modal after 1 second
       const timer = setTimeout(() => {
-        setModalVisible(false);
+        setModalAlertVisible(false);
         setErrorCreate(false);
         router.push({
           pathname: "./ListQuestions",
@@ -86,7 +92,7 @@ export default function CreateQuiz() {
   const handleCreateQuiz = async () => {
     if (name) {
       setNameValid(true);
-      if (fileContent.length > 0) { 
+      if (fileContent.length > 0) {
         handleAutomaticCreation(fileContent);
       } else {
         handleManualCreation();
@@ -109,7 +115,7 @@ export default function CreateQuiz() {
           alignItems: "center",
           justifyContent: "space-between",
           paddingVertical: 20,
-          opacity: modalVisible ? 0.2 : 1,
+          opacity: modalAlertVisible || modalInfoVisible ? 0.2 : 1,
         }}
       >
         <View style={{ width: "70%", alignItems: "center" }}>
@@ -146,12 +152,14 @@ export default function CreateQuiz() {
           <ThemedTextInput
             value={name}
             placeholder="Enter quiz name..."
-            placeholderTextColor={nameValid ? COLORS.dark_grey : COLORS.light_error}
+            placeholderTextColor={
+              nameValid ? COLORS.dark_grey : COLORS.light_error
+            }
             handleChange={(text) => {
               setName(text);
               setNameValid(true);
             }}
-            style={ nameValid ? {} : { borderColor: COLORS.light_error  } }
+            style={nameValid ? {} : { borderColor: COLORS.light_error }}
           />
           {/* input description field */}
           <View style={{ width: "100%" }}>
@@ -174,7 +182,7 @@ export default function CreateQuiz() {
           />
 
           {/* file reader */}
-          <View style={{ width: "100%" }}>
+          <View style={{ width: "100%", alignItems: "center" }}>
             <ThemedText
               variant="body"
               color="white"
@@ -186,6 +194,12 @@ export default function CreateQuiz() {
             >
               Create from CSV/TXT file (optional)
             </ThemedText>
+            <TouchableOpacity
+              style={{ marginTop: 15 }}
+              onPress={() => setModalInfoVisible(true)}
+            >
+              <AntDesign name="questioncircleo" size={30} color={COLORS.grey} />
+            </TouchableOpacity>
             <FileReaderButton onFileread={handleFileContent} />
           </View>
         </View>
@@ -211,8 +225,15 @@ export default function CreateQuiz() {
 
       <ModalAlert
         message="Quiz created successfully!"
-        modalVisible={modalVisible}
+        modalVisible={modalAlertVisible}
         errorCreate={errorCreate}
+      />
+
+      <ModalInfo
+        modalInfoVisible={modalInfoVisible}
+        messageInfoTitle="Import quiz"
+        messageInfoContent="Ensure your file follows this exact column order and includes the following columns in the first line: question, correct_answer,other_choices"
+        handleClose={() => setModalInfoVisible(false)}
       />
     </SafeAreaView>
   );

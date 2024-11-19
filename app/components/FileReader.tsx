@@ -60,7 +60,11 @@ export function FileReaderButton({ onFileread }: Prop) {
 
   return (
     <View
-      style={{ marginTop: 20, justifyContent: "center", alignItems: "center" }}
+      style={{
+        marginTop: 20,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
       <TouchableOpacity
         style={{
@@ -74,9 +78,8 @@ export function FileReaderButton({ onFileread }: Prop) {
         onPress={handleFileRead}
         disabled={isLoading}
       >
-        <FontAwesome name="upload" size={35} color="black" />
+        <FontAwesome name="upload" size={35} color={COLORS.black} />
       </TouchableOpacity>
-
       {/* Filename */}
       {fileName && (
         <View
@@ -98,6 +101,7 @@ export function FileReaderButton({ onFileread }: Prop) {
           </TouchableOpacity>
         </View>
       )}
+
     </View>
   );
 }
