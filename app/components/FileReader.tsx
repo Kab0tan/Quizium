@@ -39,21 +39,16 @@ export function FileReaderButton({ onFileread }: Prop) {
 
       const content = await FileSystem.readAsStringAsync(result.assets[0].uri);
 
-      // If it's a CSV file, parse it
-      if (result.assets[0].name.endsWith(".csv")) {
-        try {
-        } catch (error) {
-          Alert.alert("Error", "An error occurred while reading the CSV file");
-        }
-      } else {
-        // For TXT files, show the content as is
+      // Parse the CSV/TXT file
+      try {
         const parsedContent = readString(content, { header: true });
-
         // Filter out invalid or empty questions, we only return key data
         const validContent = (parsedContent.data as DataItem[]).filter(
           (item: DataItem) => Boolean(item?.question?.trim())
         );
         if (onFileread) onFileread(validContent);
+      } catch (error) {
+        Alert.alert("Error", "An error occurred while reading the CSV file");
       }
       Alert.alert("Success", "File read successfully!");
     } catch (err) {
