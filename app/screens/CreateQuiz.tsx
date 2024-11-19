@@ -19,6 +19,7 @@ export default function CreateQuiz() {
   const [fileContent, setFileContent] = useState<any | null>(null);
   const { createQuiz, addQuestion } = useDatabase();
 
+
   const handleManualCreation = async () => {
     try {
       const quizId_ = await createQuiz(name, description);
@@ -203,7 +204,6 @@ export default function CreateQuiz() {
             <FileReaderButton onFileread={handleFileContent} />
           </View>
         </View>
-
         {/* validation button  */}
         <TouchableOpacity
           onPress={() => {
@@ -231,8 +231,9 @@ export default function CreateQuiz() {
 
       <ModalInfo
         modalInfoVisible={modalInfoVisible}
-        messageInfoTitle="Import quiz"
-        messageInfoContent="Ensure your file follows this exact column order and includes the following columns in the first line: question, correct_answer,other_choices"
+        messageInfoTitle="Import file"
+        messageInfoContent={'Ensure your file follows this exact column order and includes the following columns in the first line: \nquestion,\ncorrect_answer,\nother_choices \n\n Example:\nquestion,correct_answer,other_choices\n"What is the capital of France?","Paris","London,Berlin,Madrid"'
+        }
         handleClose={() => setModalInfoVisible(false)}
       />
     </SafeAreaView>

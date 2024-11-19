@@ -5,6 +5,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Montserrat_500Medium",
   },
+  sbody: {
+    fontSize: 17,
+    fontFamily: "Montserrat_500Medium",
+  },
   h2: {
     fontSize: 30,
     fontFamily: "Montserrat_600SemiBold",

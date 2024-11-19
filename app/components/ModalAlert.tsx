@@ -134,6 +134,9 @@ export function ModalDelete({
   );
 }
 
+
+
+// modal for information
 export function ModalInfo({
   modalInfoVisible,
   messageInfoTitle,
@@ -155,7 +158,7 @@ export function ModalInfo({
             alignItems: "center",
             padding: 20,
             borderRadius: 20,
-            width: 300,
+            width: 350,
             backgroundColor: COLORS.white,
             shadowColor: "#000",
             shadowOffset: {
@@ -185,7 +188,7 @@ export function ModalInfo({
           <ThemedText variant="h3" color={COLORS.black}>
             {messageInfoTitle}
           </ThemedText>
-          <ThemedText color={COLORS.dark_grey} style={{ marginVertical: 10 }}>
+          <ThemedText variant= "sbody" color={COLORS.dark_grey} style={{ marginVertical: 10 }}>
             {messageInfoContent}
           </ThemedText>
           <View
