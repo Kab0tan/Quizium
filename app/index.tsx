@@ -52,7 +52,7 @@ export default function Index() {
               </ThemedText>
             </View>
             <View style={{ flex: 4, alignItems: "flex-end" }}>
-              <AntDesign name="plussquareo" size={40} color="black" />
+              <AntDesign name="plussquareo" size={40} color={COLORS.black} />
             </View>
           </TouchableOpacity>
         </Link>
@@ -75,7 +75,7 @@ export default function Index() {
               </ThemedText>
             </View>
             <View style={{ flex: 4, alignItems: "flex-end" }}>
-              <Entypo name="magnifying-glass" size={40} color="black" />
+              <Entypo name="magnifying-glass" size={40} color={COLORS.black} />
             </View>
           </TouchableOpacity>
         </Link>

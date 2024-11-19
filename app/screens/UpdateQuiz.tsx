@@ -65,7 +65,7 @@ export default function UpdateQuiz() {
           <View style={{ width: "100%" }}>
             <ThemedText
               variant="body"
-              color="white"
+              color={COLORS.white}
               style={{
                 marginTop: 30,
                 marginBottom: 5,
@@ -84,7 +84,7 @@ export default function UpdateQuiz() {
           <View style={{ width: "100%" }}>
             <ThemedText
               variant="body"
-              color="white"
+              color={COLORS.white}
               style={{
                 marginTop: 30,
                 marginBottom: 5,

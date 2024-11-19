@@ -106,7 +106,7 @@ export default function CreateQuestion() {
             <View style={{ width: "100%" }}>
               <ThemedText
                 variant="body"
-                color="white"
+                color={COLORS.white}
                 style={{
                   marginTop: 30,
                   marginBottom: 5,
@@ -149,7 +149,7 @@ export default function CreateQuestion() {
                   maxHeight: 48,
                 }}
               >
-                <FontAwesome6 name="image" size={25} color="black" />
+                <FontAwesome6 name="image" size={25} color={COLORS.black} />
               </TouchableOpacity>
             </View>
 
@@ -157,7 +157,7 @@ export default function CreateQuestion() {
             <View style={{ width: "100%" }}>
               <ThemedText
                 variant="body"
-                color="white"
+                color={COLORS.white}
                 style={{
                   marginTop: 30,
                   marginBottom: 5,
@@ -186,7 +186,7 @@ export default function CreateQuestion() {
               <View key={index} style={{ width: "100%" }}>
                 <ThemedText
                   variant="body"
-                  color="white"
+                  color={COLORS.white}
                   style={{
                     marginVertical: 5,
                     alignSelf: "flex-start",

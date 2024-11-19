@@ -92,7 +92,7 @@ export default function ListQuestions() {
                 alignItems: "center",
               }}
             >
-              <AntDesign name="plussquareo" size={40} color="black" />
+              <AntDesign name="plussquareo" size={40} color={COLORS.black} />
             </TouchableOpacity>
           </Link>
         </View>
@@ -148,7 +148,7 @@ export default function ListQuestions() {
                         borderRadius: 6,
                       }}
                     >
-                      <FontAwesome6 name="edit" size={24} color="black" />
+                      <FontAwesome6 name="edit" size={24} color={COLORS.black} />
                     </TouchableOpacity>
                   </Link>
                   {/* delete button  */}
@@ -163,7 +163,7 @@ export default function ListQuestions() {
                       borderRadius: 6,
                     }}
                   >
-                    <AntDesign name="delete" size={24} color="black" />
+                    <AntDesign name="delete" size={24} color={COLORS.black} />
                   </TouchableOpacity>
                 </View>
               </View>

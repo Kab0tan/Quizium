@@ -82,7 +82,7 @@ export default function UpdateQuestion() {
             <View style={{ width: "100%" }}>
               <ThemedText
                 variant="body"
-                color="white"
+                color={COLORS.white}
                 style={{
                   marginTop: 30,
                   marginBottom: 5,
@@ -101,7 +101,7 @@ export default function UpdateQuestion() {
             <View style={{ width: "100%" }}>
               <ThemedText
                 variant="body"
-                color="white"
+                color={COLORS.white}
                 style={{
                   marginTop: 30,
                   marginBottom: 5,
@@ -123,7 +123,7 @@ export default function UpdateQuestion() {
                   <View key={index} style={{ width: "100%" }}>
                     <ThemedText
                       variant="body"
-                      color="white"
+                      color={COLORS.white}
                       style={{
                         marginBottom: 5,
                         alignSelf: "flex-start",

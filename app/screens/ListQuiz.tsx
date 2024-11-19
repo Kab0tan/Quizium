@@ -99,7 +99,7 @@ export default function ListQuiz() {
             backgroundColor: COLORS.white,
           }}
         >
-          <Entypo name="magnifying-glass" size={30} color="black" />
+          <Entypo name="magnifying-glass" size={30} color={COLORS.black} />
           <ThemedTextInput
             value={searchText}
             placeholder={"SearchBar..."}
@@ -162,7 +162,7 @@ export default function ListQuiz() {
                           borderRadius: 6,
                         }}
                       >
-                        <FontAwesome6 name="edit" size={24} color="black" />
+                        <FontAwesome6 name="edit" size={24} color={COLORS.black} />
                       </TouchableOpacity>
                     </Link>
                     {/* acces to questions */}
@@ -180,7 +180,7 @@ export default function ListQuiz() {
                           borderRadius: 6,
                         }}
                       >
-                        <FontAwesome5 name="list-ul" size={24} color="black" />
+                        <FontAwesome5 name="list-ul" size={24} color={COLORS.black} />
                       </TouchableOpacity>
                     </Link>
                     {/* delete button  */}
@@ -195,7 +195,7 @@ export default function ListQuiz() {
                         borderRadius: 6,
                       }}
                     >
-                      <AntDesign name="delete" size={24} color="black" />
+                      <AntDesign name="delete" size={24} color={COLORS.black} />
                     </TouchableOpacity>
                   </View>
                 </View>
