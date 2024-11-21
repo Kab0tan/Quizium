@@ -9,6 +9,8 @@ import {
   Animated,
   useAnimatedValue,
   Easing,
+  FlatList,
+  Image,
 } from "react-native";
 import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -32,7 +34,7 @@ export default function Quiz() {
   const { isDbReady, getQuestions } = useDatabase();
   const { width } = Dimensions.get("window");
   const [containerWidth, setContainerWidth] = useState(0);
-    const progress = useAnimatedValue(0);
+  const progress = useAnimatedValue(0);
 
   const navigation = useNavigation();
 
@@ -141,7 +143,19 @@ export default function Quiz() {
     );
   };
 
-  const renderOptions = () => {
+  const renderImage = () => {
+    return (
+      <Image
+        source={{
+          uri: `data:image/jpeg;base64,${allQuestions?.[currentQuestionIndex]?.["img_string"]}`,
+        }}
+        style={{ width: "100%", height: 200 }}
+        resizeMode="contain"
+      />
+    );
+  };
+
+  const renderOption = (option: string) => {
     const currentQuestion = allQuestions[currentQuestionIndex];
 
     // Check if the current question and its options are available
@@ -152,46 +166,42 @@ export default function Quiz() {
         </View>
       );
     }
-
     return (
-      <View style={{ width: "100%" }}>
-        {shuffledOptions.map((option: string) => (
-          <TouchableOpacity
-            key={option}
-            onPress={() => validateAnswer(option)}
-            disabled={isSelected}
+      <View style={{ flex: 1, marginHorizontal: 5 }}>
+        <TouchableOpacity
+          onPress={() => validateAnswer(option)}
+          disabled={isSelected}
+          style={{
+            borderRadius: 20,
+            backgroundColor:
+              option == correctOption
+                ? COLORS.success
+                : option == currentOptionSelected
+                ? COLORS.error
+                : COLORS.white,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            marginVertical: 10,
+            height: 80,
+          }}
+        >
+          <ThemedText
+            color={
+              option == correctOption
+                ? COLORS.white
+                : option == currentOptionSelected
+                ? COLORS.white
+                : COLORS.black
+            }
             style={{
-              borderRadius: 20,
-              backgroundColor:
-                option == correctOption
-                  ? COLORS.success
-                  : option == currentOptionSelected
-                  ? COLORS.error
-                  : COLORS.white,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 20,
-              marginVertical: 10,
-              height: 80,
+              fontSize: width * 0.06,
             }}
           >
-            <ThemedText
-              color={
-                option == correctOption
-                  ? COLORS.white
-                  : option == currentOptionSelected
-                  ? COLORS.white
-                  : COLORS.black
-              }
-              style={{
-                fontSize: width * 0.06,
-              }}
-            >
-              {option}
-            </ThemedText>
-          </TouchableOpacity>
-        ))}
+            {option}
+          </ThemedText>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -260,11 +270,12 @@ export default function Quiz() {
           />
         </View>
 
-        <TouchableOpacity
-          onPress={() => restartQuiz()}
-          style={{ padding: 5 }}
-        >
-          <MaterialCommunityIcons name="restart" size={35} color={COLORS.dark_grey} />
+        <TouchableOpacity onPress={() => restartQuiz()} style={{ padding: 5 }}>
+          <MaterialCommunityIcons
+            name="restart"
+            size={35}
+            color={COLORS.dark_grey}
+          />
         </TouchableOpacity>
       </View>
     );
@@ -296,9 +307,27 @@ export default function Quiz() {
         {/* Question */}
         {renderQuestion()}
 
-        {/* Options */}
-        {renderOptions()}
+        {/* Render image */}
+        {allQuestions?.[currentQuestionIndex]?.["question_type"] === "img" &&
+          renderImage()}
 
+        {/* Options */}
+        <FlatList
+          key={`${
+            allQuestions?.[currentQuestionIndex]?.["question_type"] === "text"
+              ? "1col"
+              : "2col"
+          }`}
+          data={shuffledOptions}
+          renderItem={({ item }) => renderOption(item)}
+          keyExtractor={(option) => option}
+          numColumns={
+            allQuestions?.[currentQuestionIndex]?.["question_type"] === "text"
+              ? 1
+              : 2
+          }
+          style={{ width: "100%" }}
+        />
         {/* Score */}
         <Modal
           animationType="slide"

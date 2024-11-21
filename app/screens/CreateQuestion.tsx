@@ -1,8 +1,15 @@
 import { useState, useCallback } from "react";
-import { SafeAreaView, View, TouchableOpacity, ScrollView } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from "react-native";
 import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedTextInput } from "../components/ThemedTextInput";
+import { ImgReaderButton } from "../components/FileReader";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { ModalAlert } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
@@ -15,6 +22,7 @@ export default function CreateQuestion() {
   const [questionValid, setQuestionValid] = useState(true);
   const [correctAnswerValid, setCorrectAnswerValid] = useState(true);
   const [optionsValid, setOptionsValid] = useState(true);
+  const [img, setImg] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [errorAdding, setErrorAdding] = useState(false);
   const { quizId } = useLocalSearchParams();
@@ -31,7 +39,6 @@ export default function CreateQuestion() {
     }, [quizId])
   );
 
-
   const handleAddingQuestion = async () => {
     const questionEmpty = !question;
     const correctAnswerEmpty = !correctAnswer;
@@ -47,7 +54,24 @@ export default function CreateQuestion() {
     }
     if (!questionEmpty && !correctAnswerEmpty && !optionsEmpty) {
       try {
-        await addQuestion(Number(quizId), question, correctAnswer, options);
+        if (img) {
+          await addQuestion(
+            Number(quizId),
+            "img",
+            question,
+            correctAnswer,
+            options,
+            img
+          );
+        } else {
+          await addQuestion(
+            Number(quizId),
+            "text",
+            question,
+            correctAnswer,
+            options
+          );
+        }
         setModalVisible(true);
 
         // Hide the modal after 1 second
@@ -67,6 +91,10 @@ export default function CreateQuestion() {
         setErrorAdding(true);
       }
     }
+  };
+
+  const handleImage = (img: string) => {
+    setImg(img);
   };
 
   return (
@@ -116,14 +144,15 @@ export default function CreateQuestion() {
                 Question
               </ThemedText>
             </View>
-            <View style={{ width: "100%", flexDirection: "row", gap: 10 }}>
-              <View
-                style={{ flex: 1 }}
-                onLayout={(event) => {
-                  const { height } = event.nativeEvent.layout;
-                  console.log("Height:", height);
-                }}
-              >
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                gap: 10,
+                alignItems: "center",
+              }}
+            >
+              <View style={{ flex: 1 }}>
                 <ThemedTextInput
                   value={question}
                   placeholder="Enter quiz Question..."
@@ -139,19 +168,17 @@ export default function CreateQuestion() {
                   }
                 />
               </View>
-              <TouchableOpacity
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: COLORS.create,
-                  borderRadius: 10,
-                  paddingHorizontal: 10,
-                  maxHeight: 48,
-                }}
-              >
-                <FontAwesome6 name="image" size={25} color={COLORS.black} />
-              </TouchableOpacity>
+              {/* add image button  */}
+              <ImgReaderButton onFileread={handleImage} />
             </View>
+
+            {img && (
+              <Image
+                source={{ uri: `data:image/jpeg;base64,${img}` }}
+                style={{ width: 200, height: 200, marginTop: 20 }}
+                resizeMode="contain"
+              />
+            )}
 
             {/* input correctAnswer field */}
             <View style={{ width: "100%" }}>
@@ -159,7 +186,7 @@ export default function CreateQuestion() {
                 variant="body"
                 color={COLORS.white}
                 style={{
-                  marginTop: 30,
+                  marginTop: 20,
                   marginBottom: 5,
                   alignSelf: "flex-start",
                 }}
@@ -185,7 +212,6 @@ export default function CreateQuestion() {
             {options.map((option, index) => (
               <View key={index} style={{ width: "100%" }}>
                 <ThemedText
-                  variant="body"
                   color={COLORS.white}
                   style={{
                     marginVertical: 5,

@@ -5,6 +5,7 @@ import * as FileSystem from "expo-file-system";
 import { readString } from "react-native-csv";
 import { ThemedText } from "./ThemedText";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
 
@@ -101,7 +102,70 @@ export function FileReaderButton({ onFileread }: Prop) {
           </TouchableOpacity>
         </View>
       )}
+    </View>
+  );
+}
 
+export function ImgReaderButton({ onFileread }: Prop) {
+  const [loaded, setLoaded] = useState(false);
+
+  const handleFileRead = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "image/*",
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) {
+        return;
+      }
+
+      const imageb64 = await FileSystem.readAsStringAsync(
+        result.assets[0].uri,
+        {
+          encoding: FileSystem.EncodingType.Base64,
+        }
+      );
+
+      Alert.alert("Success", "Image loaded successfully!");
+      if (onFileread) {
+        onFileread(imageb64); //returning the image as base64 string
+      }
+    } catch (err) {
+      Alert.alert("Error", "An error occurred while loading the image");
+    } finally {
+      setLoaded(true);
+    }
+  };
+
+  const handleClearImage = () => {
+    setLoaded(false);
+    if (onFileread) onFileread(""); // Clear the image by returning empty string
+  };
+
+  return (
+    <View>
+      <TouchableOpacity
+        onPress={() => {
+          if (loaded) handleClearImage();
+          else handleFileRead();
+        }}
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: loaded ? COLORS.delete : COLORS.create,
+          borderRadius: 10,
+          paddingHorizontal: 12,
+          paddingVertical: 12,
+          maxHeight: 50,
+        }}
+      >
+        {loaded ? (
+          <AntDesign name="closecircle" size={25} />
+        ) : (
+          <FontAwesome6 name="image" size={25} />
+        )}
+      </TouchableOpacity>
     </View>
   );
 }

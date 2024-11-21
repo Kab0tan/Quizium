@@ -20,14 +20,16 @@ export const setupDatabase = () => {
         );`
       );
 
-      // Create questions table
+      // Create questions table, type : 'text' or 'img'
       await db.execAsync(
         `CREATE TABLE IF NOT EXISTS questions (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           quiz_id INTEGER,
+          question_type TEXT NOT NULL, 
           question_text TEXT NOT NULL,
           correct_answer TEXT NOT NULL,
           options TEXT NOT NULL,
+          img_string TEXT,
           FOREIGN KEY (quiz_id) REFERENCES quizzes (id)
         );`
       );
@@ -127,20 +129,24 @@ export const getQuestions = (quizId: number) => {
 
 export const addQuestion = async (
   quizId: number,
+  questionType: string,
   questionText: string,
   correctAnswer: string,
-  options: string[]
+  options: string[],
+  imgString?: string
 ): Promise<number> => {
   try {
     const result = await new Promise((resolve, reject) => {
       db.withTransactionAsync(async () => {
         try {
           const result = await db.runAsync(
-            "INSERT INTO questions (quiz_id, question_text, correct_answer, options) VALUES (?, ?, ?, ?)",
+            "INSERT INTO questions (quiz_id,question_type, question_text, correct_answer, options, img_string) VALUES (?,?, ?, ?, ?, ?)",
             quizId,
+            questionType,
             questionText,
             correctAnswer,
-            JSON.stringify(options)
+            JSON.stringify(options), 
+            imgString || null
           );
           resolve(result.lastInsertRowId);
         } catch (error) {

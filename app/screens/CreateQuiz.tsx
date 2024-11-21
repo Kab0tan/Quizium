@@ -62,9 +62,10 @@ export default function CreateQuiz() {
         }
         await addQuestion(
           quizId_ as number,
+          "text", //type of the question, for now only Text when via TXT/CSV
           item["question"],
           item["correct_answer"],
-          optionsArray
+          optionsArray,
         );
       }
       setModalAlertVisible(true);

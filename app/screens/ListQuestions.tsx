@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Image,
 } from "react-native";
 // Expo and Navigation imports
 import { useLocalSearchParams, Link, useFocusEffect } from "expo-router";
@@ -148,7 +149,11 @@ export default function ListQuestions() {
                         borderRadius: 6,
                       }}
                     >
-                      <FontAwesome6 name="edit" size={24} color={COLORS.black} />
+                      <FontAwesome6
+                        name="edit"
+                        size={24}
+                        color={COLORS.black}
+                      />
                     </TouchableOpacity>
                   </Link>
                   {/* delete button  */}
@@ -176,6 +181,15 @@ export default function ListQuestions() {
                   marginBottom: 15,
                 }}
               />
+              {item["question_type"] == "img" && (
+                <Image
+                  source={{
+                    uri: `data:image/jpeg;base64,${item["img_string"]}`,
+                  }}
+                  style={{ width: 200, height: 200, alignSelf: "center" }}
+                  resizeMode="contain"
+                />
+              )}
               <ThemedText variant="h4">Correct answer :</ThemedText>
               <ThemedText>{item["correct_answer"]}</ThemedText>
               <ThemedText variant="h4"> Options : </ThemedText>
@@ -192,7 +206,7 @@ export default function ListQuestions() {
           keyExtractor={(item) => item["id"]}
         />
         {/* total number of questions */}
-        <View style={{  padding: 10 }}>
+        <View style={{ padding: 10 }}>
           <ThemedText variant="h4" color={COLORS.white}>
             {questions.length} question(s)
           </ThemedText>
