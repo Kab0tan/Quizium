@@ -18,6 +18,7 @@ export const useDatabase = () => {
     getQuizzes: db.getQuizzes,
     updateQuiz: db.updateQuiz,
     deleteQuiz: db.deleteQuiz,
+    getQuestion: db.getQuestion,
     getQuestions: db.getQuestions,
     addQuestion: db.addQuestion,
     updateQuestion: db.updateQuestion,

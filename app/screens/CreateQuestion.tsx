@@ -10,7 +10,6 @@ import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedTextInput } from "../components/ThemedTextInput";
 import { ImgReaderButton } from "../components/FileReader";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { ModalAlert } from "../components/ModalAlert";
 import { useDatabase } from "../useDatabase";
 import { COLORS } from "../constants/theme";
@@ -19,10 +18,13 @@ export default function CreateQuestion() {
   const [question, setQuestion] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [options, setOptions] = useState(["", "", ""]);
+  //Validation variables
   const [questionValid, setQuestionValid] = useState(true);
   const [correctAnswerValid, setCorrectAnswerValid] = useState(true);
   const [optionsValid, setOptionsValid] = useState(true);
+  //handling image
   const [img, setImg] = useState("");
+  //other
   const [modalVisible, setModalVisible] = useState(false);
   const [errorAdding, setErrorAdding] = useState(false);
   const { quizId } = useLocalSearchParams();
@@ -122,7 +124,6 @@ export default function CreateQuestion() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 10,
-                alignContent: "center",
               }}
             >
               <ThemedText variant="h3" style={{ textAlign: "center" }}>
@@ -133,7 +134,6 @@ export default function CreateQuestion() {
             {/* input Question field */}
             <View style={{ width: "100%" }}>
               <ThemedText
-                variant="body"
                 color={COLORS.white}
                 style={{
                   marginTop: 30,
@@ -172,6 +172,7 @@ export default function CreateQuestion() {
               <ImgReaderButton onFileread={handleImage} />
             </View>
 
+            {/* input image field */}
             {img && (
               <Image
                 source={{ uri: `data:image/jpeg;base64,${img}` }}
@@ -183,7 +184,6 @@ export default function CreateQuestion() {
             {/* input correctAnswer field */}
             <View style={{ width: "100%" }}>
               <ThemedText
-                variant="body"
                 color={COLORS.white}
                 style={{
                   marginTop: 20,

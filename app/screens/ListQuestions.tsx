@@ -135,9 +135,6 @@ export default function ListQuestions() {
                       pathname: `./UpdateQuestion`,
                       params: {
                         questionId: item["id"],
-                        questionText: item["question_text"],
-                        correctAnswer: item["correct_answer"],
-                        options: item["options"],
                       },
                     }}
                     asChild

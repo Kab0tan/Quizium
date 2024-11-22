@@ -1,39 +1,79 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   SafeAreaView,
   View,
   TouchableOpacity,
   ScrollView,
+  Image,
+  FlatList,
 } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams, router, useFocusEffect } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedTextInput } from "../components/ThemedTextInput";
 import { ModalAlert } from "../components/ModalAlert";
+import { ImgReaderButton } from "../components/FileReader";
 import { useDatabase } from "../useDatabase";
 import { COLORS } from "../constants/theme";
 
+interface Question {
+  id: number;
+  question_type: string;
+  question_text: string;
+  correct_answer: string;
+  options: string[];
+  img_string: string | null;
+}
+
 export default function UpdateQuestion() {
-  const { questionId, questionText, correctAnswer, options } =
-    useLocalSearchParams();
-  const [newQuestionText, setNewQuestiontext] = useState(
-    questionText as string
-  );
-  const [newCorrectAnswer, setNewCorrectAnswer] = useState(
-    correctAnswer as string
-  );
-  const [newOptions, setNewOptions] = useState(JSON.parse(options as string));
+  const { questionId } = useLocalSearchParams();
+  const { isDbReady, getQuestion, updateQuestion } = useDatabase();
+
+  const [oldCorrectAnswer, setOldCorrectAnswer] = useState("");
+
+  const [newQuestionType, setNewQuestionType] = useState("");
+  const [newQuestionText, setNewQuestiontext] = useState("");
+  const [newCorrectAnswer, setNewCorrectAnswer] = useState("");
+  const [newOptions, setNewOptions] = useState<string[]>([]);
+  const [newImg, setNewImg] = useState<string | null>(null);
+  //other
   const [modalVisible, setModalVisible] = useState(false);
   const [errorUpdate, setErrorUpdate] = useState(false);
 
-  const { updateQuestion } = useDatabase();
+  useFocusEffect(
+    useCallback(() => {
+      if (isDbReady) {
+        loadQuestion();
+      }
+    }, [isDbReady])
+  );
+
+  const loadQuestion = async () => {
+    try {
+      const loadedQuestion = (await getQuestion(
+        Number(questionId)
+      )) as Question;
+      if (loadedQuestion) {
+        setOldCorrectAnswer(loadedQuestion.correct_answer);
+        setNewQuestionType(loadedQuestion.question_type);
+        setNewQuestiontext(loadedQuestion.question_text);
+        setNewCorrectAnswer(loadedQuestion.correct_answer);
+        setNewOptions(JSON.parse(loadedQuestion.options as unknown as string));
+        setNewImg(loadedQuestion.img_string);
+      }
+    } catch (error) {
+      console.error("Error loading question:", error);
+    }
+  };
 
   const handleUpdateQuestion = async () => {
     try {
       await updateQuestion(
         Number(questionId),
+        newQuestionType,
         newQuestionText,
         newCorrectAnswer,
-        newOptions
+        newOptions,
+        newImg
       );
       setModalVisible(true);
       // Hide the modal after 1 second
@@ -63,7 +103,9 @@ export default function UpdateQuestion() {
             opacity: modalVisible ? 0.2 : 1,
           }}
         >
-          <View style={{ width: "70%", alignItems: "center" }}>
+          <View
+            style={{ width: "70%", alignItems: "center", marginBottom: 30 }}
+          >
             {/* title */}
             <View
               style={{
@@ -73,15 +115,16 @@ export default function UpdateQuestion() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 10,
-                marginVertical: 15,
               }}
             >
-              <ThemedText variant="h3">Update Question</ThemedText>
+              <ThemedText variant="h3" style={{ textAlign: "center" }}>
+                Update Question
+              </ThemedText>
             </View>
+
             {/* input QuestionText field */}
             <View style={{ width: "100%" }}>
               <ThemedText
-                variant="body"
                 color={COLORS.white}
                 style={{
                   marginTop: 30,
@@ -92,15 +135,37 @@ export default function UpdateQuestion() {
                 Question
               </ThemedText>
             </View>
-            <ThemedTextInput
-              value={newQuestionText}
-              placeholder="Enter new question text..."
-              handleChange={setNewQuestiontext}
-            />
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                gap: 10,
+                alignItems: "center",
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <ThemedTextInput
+                  value={newQuestionText}
+                  placeholder="Enter new question text..."
+                  handleChange={setNewQuestiontext}
+                />
+              </View>
+              {/* add image button  */}
+              <ImgReaderButton onFileread={setNewImg}/>
+            </View>
+
+            {/* input image field */}
+            {newImg && (
+              <Image
+                source={{ uri: `data:image/jpeg;base64,${newImg}` }}
+                style={{ width: 200, height: 200, marginTop: 20 }}
+                resizeMode="contain"
+              />
+            )}
+
             {/* input correctAnswer field */}
             <View style={{ width: "100%" }}>
               <ThemedText
-                variant="body"
                 color={COLORS.white}
                 style={{
                   marginTop: 30,
@@ -117,9 +182,11 @@ export default function UpdateQuestion() {
               handleChange={setNewCorrectAnswer}
             />
             {/* input Options field */}
-            {newOptions.map(
+            
+
+            {newOptions && newOptions.map(
               (option: string, index: number) =>
-                option != correctAnswer && (
+                option != oldCorrectAnswer && (
                   <View key={index} style={{ width: "100%" }}>
                     <ThemedText
                       variant="body"

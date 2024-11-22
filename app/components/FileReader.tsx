@@ -127,7 +127,7 @@ export function ImgReaderButton({ onFileread }: Prop) {
       const targetSize = 20 * 720; // 25KB in bytes
       const maxAttempts = 5;
       let attempts = 0;
-      // Compress the image to max ~25Ko
+      // Compress the image to max ~20Ko
       while (imageSize > targetSize && attempts < maxAttempts) {
         compressedImage = await ImageManipulator.manipulateAsync(
           result.assets[0].uri,

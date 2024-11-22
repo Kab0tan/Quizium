@@ -13,6 +13,7 @@ import {
   Image,
 } from "react-native";
 import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
+import CircularProgress from "react-native-circular-progress-indicator";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ThemedText } from "../components/ThemedText";
@@ -198,10 +199,10 @@ export default function Quiz() {
             }
             adjustsFontSizeToFit
             numberOfLines={5}
-            ellipsizeMode="tail" 
+            ellipsizeMode="tail"
             style={{
-              width: '100%',  
-              textAlign: 'center'
+              width: "100%",
+              textAlign: "center",
             }}
           >
             {option}
@@ -358,7 +359,7 @@ export default function Quiz() {
               <ThemedText variant="h2" style={{ marginBottom: 20 }}>
                 {score} out of {allQuestions.length}
               </ThemedText>
-              <AntDesign
+              {/* <AntDesign
                 name={
                   score != allQuestions.length ? "closecircle" : "checkcircle"
                 }
@@ -367,6 +368,13 @@ export default function Quiz() {
                 }
                 size={50}
                 style={{ marginBottom: 20 }}
+              /> */}
+              <CircularProgress
+                value={score/allQuestions.length*100}
+                valueSuffix={"%"}
+                activeStrokeColor={COLORS.success}
+                inActiveStrokeColor={COLORS.success}
+                inActiveStrokeOpacity={0.2}
               />
               <TouchableOpacity
                 onPress={() => backToList()}
@@ -375,7 +383,7 @@ export default function Quiz() {
                   width: "100%",
                   padding: 20,
                   borderRadius: 20,
-                  marginBottom: 10,
+                  marginVertical: 10,
                 }}
               >
                 <ThemedText

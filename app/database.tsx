@@ -46,8 +46,6 @@ export const setupDatabase = () => {
 };
 
 // Quiz CRUD Operations
-
-
 export const createQuiz = async (title: string, description: string) => {
   const result = await db.runAsync(
     "INSERT INTO quizzes (title, description) VALUES (?, ?)",
@@ -108,6 +106,26 @@ export const deleteQuiz = (id: number) => {
 };
 
 // Questions CRUD Operations
+export const getQuestion = (questionId: number) => {
+  return new Promise((resolve, reject) => {
+    db.withTransactionAsync(async () => {
+      const question = await db.getFirstAsync(
+        "SELECT * FROM questions WHERE id = ?",
+        questionId
+      );
+      resolve(question);
+    });
+  })
+    .then((value) => {
+      return value;
+    })
+    .catch((error) => {
+      console.error("Promise rejected with error: " + error);
+    });
+}
+
+
+
 export const getQuestions = (quizId: number) => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
@@ -165,15 +183,17 @@ export const addQuestion = async (
 
 export const updateQuestion = (
   id: number,
+  question_type: string,
   question_text: string,
   correct_answer: string,
-  options: string[]
+  options: string[],
+  img_string: string | null = null
 ) => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       await db.runAsync(
-        "UPDATE questions SET question_text = ?, correct_answer = ?, options = ? WHERE id = ?",
-        [question_text, correct_answer, JSON.stringify(options), id]
+        "UPDATE questions SET question_text = ?,question_type = ?, correct_answer = ?, options = ?, img_string = ? WHERE id = ?",
+        [question_text,question_type, correct_answer, JSON.stringify(options), img_string || null,  id]
       );
       resolve("Question updated successfully");
     });
