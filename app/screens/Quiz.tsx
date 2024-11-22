@@ -182,12 +182,13 @@ export default function Quiz() {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            paddingHorizontal: 20,
+            paddingHorizontal: 10,
             marginVertical: 10,
-            height: 80,
+            height: 100,
           }}
         >
           <ThemedText
+            variant="h4"
             color={
               option == correctOption
                 ? COLORS.white
@@ -195,8 +196,12 @@ export default function Quiz() {
                 ? COLORS.white
                 : COLORS.black
             }
+            adjustsFontSizeToFit
+            numberOfLines={5}
+            ellipsizeMode="tail" 
             style={{
-              fontSize: width * 0.06,
+              width: '100%',  
+              textAlign: 'center'
             }}
           >
             {option}
