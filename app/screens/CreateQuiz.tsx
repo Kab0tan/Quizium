@@ -233,7 +233,7 @@ export default function CreateQuiz() {
       <ModalInfo
         modalInfoVisible={modalInfoVisible}
         messageInfoTitle="Import file"
-        messageInfoContent={'Ensure your file follows this exact column order and includes the following columns in the first line: \nquestion,\ncorrect_answer,\nother_choices \n\n Example:\nquestion,correct_answer,other_choices\n"What is the capital of France?","Paris","London,Berlin,Madrid"'
+        messageInfoContent={'Ensure your file follows this exact column order and includes the following columns in the first line: \nquestion,\ncorrect_answer,\nother_choices \n\n Example:\nquestion,correct_answer,other_choices\n"What is the capital of France?","Paris","London,Berlin,Madrid" \n\nYou cannot add images!'
         }
         handleClose={() => setModalInfoVisible(false)}
       />

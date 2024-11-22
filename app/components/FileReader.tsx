@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import * as FileSystem from "expo-file-system";
 import { readString } from "react-native-csv";
 import { ThemedText } from "./ThemedText";
@@ -120,12 +121,41 @@ export function ImgReaderButton({ onFileread }: Prop) {
         return;
       }
 
+      let compressionRatio = 0.5;
+      let compressedImage = null;
+      let imageSize = Infinity;
+      const targetSize = 20 * 720; // 25KB in bytes
+      const maxAttempts = 5;
+      let attempts = 0;
+      // Compress the image to max ~25Ko
+      while (imageSize > targetSize && attempts < maxAttempts) {
+        compressedImage = await ImageManipulator.manipulateAsync(
+          result.assets[0].uri,
+          [{ resize: { width: 720 } }],
+          {
+            compress: 0.5,
+            format: ImageManipulator.SaveFormat.JPEG,
+          }
+        );
+        // Adjust compression for next iteration if needed
+        if (imageSize > targetSize) {
+          compressionRatio *= 0.7;
+        }
+        attempts++;
+      }
+      if (!compressedImage) {
+        throw new Error('Image compression failed');
+      }
       const imageb64 = await FileSystem.readAsStringAsync(
-        result.assets[0].uri,
+        // result.assets[0].uri,
+        compressedImage.uri,
         {
           encoding: FileSystem.EncodingType.Base64,
         }
       );
+      // Calculate base64 size
+      const base64Size = (imageb64.length * 3) / 4;
+      console.log(`Base64 string size: ${(base64Size / 1024).toFixed(2)} KB`);
 
       Alert.alert("Success", "Image loaded successfully!");
       if (onFileread) {
