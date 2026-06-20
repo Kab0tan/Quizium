@@ -109,6 +109,11 @@ export default function ListQuiz() {
         </View>
 
         {/* list of quiz */}
+        {filteredQuizes.length === 0 && (
+          <ThemedText color={COLORS.white} style={{ marginTop: 40, opacity: 0.5 }}>
+            {searchText ? "No quizzes match your search." : "No quizzes yet. Create one!"}
+          </ThemedText>
+        )}
         <FlatList
           data={filteredQuizes}
           renderItem={({ item }) => (
@@ -212,7 +217,7 @@ export default function ListQuiz() {
               </TouchableOpacity>
             </Link>
           )}
-          keyExtractor={(item) => item["id"]}
+          keyExtractor={(item) => String(item["id"])}
         />
       </View>
       {/* delete modal */}

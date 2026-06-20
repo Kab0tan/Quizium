@@ -1,4 +1,4 @@
-import { Pressable, View, type TextProps } from "react-native";
+import { Pressable, View } from "react-native";
 import { router } from "expo-router";
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS } from "../constants/theme";

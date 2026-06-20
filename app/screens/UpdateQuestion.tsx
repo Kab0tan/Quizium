@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -38,6 +38,13 @@ export default function UpdateQuestion() {
   //other
   const [modalVisible, setModalVisible] = useState(false);
   const [errorUpdate, setErrorUpdate] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,13 +84,11 @@ export default function UpdateQuestion() {
       );
       setModalVisible(true);
       // Hide the modal after 1 second
-      const timer = setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         setModalVisible(false);
         setErrorUpdate(false);
         router.back();
       }, 1000);
-      // Clean up the timer when the component unmounts or the state changes
-      return () => clearTimeout(timer);
     } catch (error) {
       console.error("Error updating question:", error);
       setErrorUpdate(true);
@@ -186,7 +191,7 @@ export default function UpdateQuestion() {
 
             {newOptions && newOptions.map(
               (option: string, index: number) =>
-                option != oldCorrectAnswer && (
+                option !== oldCorrectAnswer && (
                   <View key={index} style={{ width: "100%" }}>
                     <ThemedText
                       variant="body"

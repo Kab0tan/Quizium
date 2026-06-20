@@ -99,6 +99,11 @@ export default function ListQuestions() {
         </View>
 
         {/* list of questions */}
+        {questions.length === 0 && (
+          <ThemedText color={COLORS.white} style={{ marginTop: 40, opacity: 0.5 }}>
+            No questions yet. Add one!
+          </ThemedText>
+        )}
         <FlatList
           data={questions}
           renderItem={({ item }) => (
@@ -200,7 +205,7 @@ export default function ListQuestions() {
               </View>
             </View>
           )}
-          keyExtractor={(item) => item["id"]}
+          keyExtractor={(item) => String(item["id"])}
         />
         {/* total number of questions */}
         <View style={{ padding: 10 }}>

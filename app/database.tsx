@@ -56,7 +56,7 @@ export const createQuiz = async (title: string, description: string) => {
   return result.lastInsertRowId;
 };
 
-export const getQuizzes = () => {
+export const getQuizzes = async () => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       const quizzes = await db.getAllAsync("SELECT * FROM quizzes");
@@ -80,11 +80,11 @@ export const updateQuiz = (id: number, title: string, description: string) => {
         [title, description, id]
       );
       resolve("Quiz updated successfully");
-    });
+    }).catch(reject);
   });
 };
 
-export const deleteQuiz = (id: number) => {
+export const deleteQuiz = async (id: number) => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       // First delete related questions
@@ -95,18 +95,19 @@ export const deleteQuiz = (id: number) => {
       await db.runAsync("DELETE FROM quizzes WHERE id = $id", { $id: id });
 
       resolve("Quiz deleted successfully");
-    });
+    }).catch(reject);
   })
     .then((value) => {
       console.log("Promise resolved with value: " + value);
     })
     .catch((error) => {
       console.error("Promise rejected with error: " + error);
+      throw error;
     });
 };
 
 // Questions CRUD Operations
-export const getQuestion = (questionId: number) => {
+export const  getQuestion = async (questionId: number) => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       const question = await db.getFirstAsync(
@@ -114,19 +115,20 @@ export const getQuestion = (questionId: number) => {
         questionId
       );
       resolve(question);
-    });
+    }).catch(reject);
   })
     .then((value) => {
       return value;
     })
     .catch((error) => {
       console.error("Promise rejected with error: " + error);
+      throw error;
     });
 }
 
 
 
-export const getQuestions = (quizId: number) => {
+export const getQuestions = async (quizId: number) => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       const questions = await db.getAllAsync(
@@ -134,13 +136,14 @@ export const getQuestions = (quizId: number) => {
         quizId
       );
       resolve(questions);
-    });
+    }).catch(reject);
   })
     .then((value) => {
       return value;
     })
     .catch((error) => {
       console.error("Promise rejected with error: " + error);
+      throw error;
     });
 };
 
@@ -196,22 +199,23 @@ export const updateQuestion = (
         [question_text,question_type, correct_answer, JSON.stringify(options), img_string || null,  id]
       );
       resolve("Question updated successfully");
-    });
+    }).catch(reject);
   });
 };
 
-export const deleteQuestion = (id: number) => {
+export const deleteQuestion = async (id: number) => {
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       await db.runAsync("DELETE FROM questions WHERE id = $id", { $id: id });
 
       resolve("Question deleted successfully");
-    });
+    }).catch(reject);
   })
     .then((value) => {
       console.log("Promise resolved with value: " + value);
     })
     .catch((error) => {
       console.error("Promise rejected with error: " + error);
+      throw error;
     });
 };

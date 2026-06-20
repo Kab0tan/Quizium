@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
 import {
   SafeAreaView,
   View,
@@ -37,13 +36,14 @@ export default function Quiz() {
   const [containerWidth, setContainerWidth] = useState(0);
   const progress = useAnimatedValue(0);
 
-  const navigation = useNavigation();
-
   useFocusEffect(
     useCallback(() => {
       if (isDbReady) {
         loadQuestions();
       }
+      return () => {
+        restartQuiz();
+      };
     }, [isDbReady, quizId])
   );
 
@@ -56,13 +56,7 @@ export default function Quiz() {
       ];
       setShuffledOptions(shuffleArray(options));
     }
-    const unsubscribe = navigation.addListener("blur", () => {
-      // Do something when the screen blurs
-      restartQuiz();
-    });
-
-    return unsubscribe;
-  }, [currentQuestionIndex, allQuestions, navigation]);
+  }, [currentQuestionIndex, allQuestions]);
 
   const shuffleArray = (array: any) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -83,7 +77,9 @@ export default function Quiz() {
   };
 
   const validateAnswer = (selectedOption: string) => {
-    let correct_answer = allQuestions[currentQuestionIndex]?.["correct_answer"];
+    const currentQuestion = allQuestions[currentQuestionIndex];
+    if (!currentQuestion) return;
+    let correct_answer = currentQuestion["correct_answer"];
     setCorrectOption(correct_answer);
     setCurrentOptionSelected(selectedOption);
     setIsSelected(true);

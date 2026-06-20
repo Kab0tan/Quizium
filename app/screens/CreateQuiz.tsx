@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { SafeAreaView, View, TouchableOpacity, Modal } from "react-native";
 import { router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
@@ -18,7 +18,13 @@ export default function CreateQuiz() {
   const [errorCreate, setErrorCreate] = useState(false);
   const [fileContent, setFileContent] = useState<any | null>(null);
   const { createQuiz, addQuestion } = useDatabase();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const handleManualCreation = async () => {
     try {
@@ -30,7 +36,7 @@ export default function CreateQuiz() {
       setName("");
       setDescription("");
       // Hide the modal after 1 second
-      const timer = setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         setModalAlertVisible(false);
         setErrorCreate(false);
         router.push({
@@ -38,9 +44,6 @@ export default function CreateQuiz() {
           params: { quizId: quizId_ as number },
         });
       }, 1000);
-
-      // Clean up the timer when the component unmounts or the state changes
-      return () => clearTimeout(timer);
     } catch (error) {
       console.error("Error creating quiz:", error);
       setErrorCreate(true);
@@ -74,7 +77,7 @@ export default function CreateQuiz() {
       setName("");
       setDescription("");
       // Hide the modal after 1 second
-      const timer = setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         setModalAlertVisible(false);
         setErrorCreate(false);
         router.push({
@@ -82,9 +85,6 @@ export default function CreateQuiz() {
           params: { quizId: quizId_ as number },
         });
       }, 1000);
-
-      // Clean up the timer when the component unmounts or the state changes
-      return () => clearTimeout(timer);
     } catch (error) {
       console.error("Error creating quiz:", error);
       setErrorCreate(true);
@@ -94,7 +94,7 @@ export default function CreateQuiz() {
   const handleCreateQuiz = async () => {
     if (name) {
       setNameValid(true);
-      if (fileContent.length > 0) {
+      if (fileContent && fileContent.length > 0) {
         handleAutomaticCreation(fileContent);
       } else {
         handleManualCreation();

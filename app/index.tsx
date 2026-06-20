@@ -35,7 +35,6 @@ export default function Index() {
       <View style={{ flexDirection: "row", gap: 15 }}>
         {/* Create quiz */}
         <Link href="/screens/CreateQuiz" asChild>
-        {/* <Link href="/screens/CreateQuiz" asChild> */}
           <TouchableOpacity
             style={{
               flex: 1,

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -29,6 +29,13 @@ export default function CreateQuestion() {
   const [errorAdding, setErrorAdding] = useState(false);
   const { quizId } = useLocalSearchParams();
   const { addQuestion } = useDatabase();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,7 +84,7 @@ export default function CreateQuestion() {
         setModalVisible(true);
 
         // Hide the modal after 1 second
-        const timer = setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           setModalVisible(false);
           setErrorAdding(false);
           router.push({
@@ -85,9 +92,6 @@ export default function CreateQuestion() {
             params: { quizId: Number(quizId) },
           });
         }, 1000);
-
-        // Clean up the timer when the component unmounts or the state changes
-        return () => clearTimeout(timer);
       } catch (error) {
         console.error("Error adding question:", error);
         setErrorAdding(true);
@@ -101,165 +105,167 @@ export default function CreateQuestion() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
-      <ScrollView>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingVertical: 20,
-            opacity: modalVisible ? 0.2 : 1,
-          }}
-        >
+      <ScrollView
+        contentContainerStyle={{
+          alignItems: "center",
+          paddingVertical: 20,
+          paddingBottom: 100,
+          opacity: modalVisible ? 0.2 : 1,
+        }}
+      >
+        <View style={{ width: "70%", alignItems: "center", marginBottom: 30 }}>
+          {/* title */}
           <View
-            style={{ width: "70%", alignItems: "center", marginBottom: 30 }}
-          >
-            {/* title */}
-            <View
-              style={{
-                backgroundColor: COLORS.create,
-                height: 80,
-                width: "70%",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 10,
-              }}
-            >
-              <ThemedText variant="h3" style={{ textAlign: "center" }}>
-                Create Question
-              </ThemedText>
-            </View>
-
-            {/* input Question field */}
-            <View style={{ width: "100%" }}>
-              <ThemedText
-                color={COLORS.white}
-                style={{
-                  marginTop: 30,
-                  marginBottom: 5,
-                  alignSelf: "flex-start",
-                }}
-              >
-                Question
-              </ThemedText>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-                gap: 10,
-                alignItems: "center",
-              }}
-            >
-              <View style={{ flex: 1 }}>
-                <ThemedTextInput
-                  value={question}
-                  placeholder="Enter quiz Question..."
-                  placeholderTextColor={
-                    questionValid ? COLORS.dark_grey : COLORS.light_error
-                  }
-                  handleChange={(question) => {
-                    setQuestion(question);
-                    setQuestionValid(true);
-                  }}
-                  style={
-                    questionValid ? {} : { borderColor: COLORS.light_error }
-                  }
-                />
-              </View>
-              {/* add image button  */}
-              <ImgReaderButton onFileread={handleImage} />
-            </View>
-
-            {/* input image field */}
-            {img && (
-              <Image
-                source={{ uri: `data:image/jpeg;base64,${img}` }}
-                style={{ width: 200, height: 200, marginTop: 20 }}
-                resizeMode="contain"
-              />
-            )}
-
-            {/* input correctAnswer field */}
-            <View style={{ width: "100%" }}>
-              <ThemedText
-                color={COLORS.white}
-                style={{
-                  marginTop: 20,
-                  marginBottom: 5,
-                  alignSelf: "flex-start",
-                }}
-              >
-                Correct answer
-              </ThemedText>
-            </View>
-            <ThemedTextInput
-              value={correctAnswer}
-              placeholder="Enter correct answer..."
-              placeholderTextColor={
-                correctAnswerValid ? COLORS.dark_grey : COLORS.light_error
-              }
-              handleChange={(corrAnswer) => {
-                setCorrectAnswer(corrAnswer);
-                setCorrectAnswerValid(true);
-              }}
-              style={
-                correctAnswerValid ? {} : { borderColor: COLORS.light_error }
-              }
-            />
-            {/* input options field */}
-            {options.map((option, index) => (
-              <View key={index} style={{ width: "100%" }}>
-                <ThemedText
-                  color={COLORS.white}
-                  style={{
-                    marginVertical: 5,
-                    alignSelf: "flex-start",
-                  }}
-                >
-                  Wrong answer {index + 1}
-                </ThemedText>
-                <ThemedTextInput
-                  value={option}
-                  placeholder={`Enter wrong answer ${index + 1}...`}
-                  placeholderTextColor={
-                    optionsValid ? COLORS.dark_grey : COLORS.light_error
-                  }
-                  handleChange={(text) => {
-                    const newOptions = [...options];
-                    newOptions[index] = text;
-                    setOptions(newOptions);
-                    if (newOptions.every((opt) => opt !== ""))
-                      setOptionsValid(true);
-                  }}
-                  style={
-                    optionsValid ? {} : { borderColor: COLORS.light_error }
-                  }
-                />
-              </View>
-            ))}
-          </View>
-
-          {/* validation button  */}
-          <TouchableOpacity
-            onPress={() => {
-              handleAddingQuestion();
-            }}
             style={{
-              backgroundColor: COLORS.explore,
-              height: 50,
+              backgroundColor: COLORS.create,
+              height: 80,
+              width: "70%",
               justifyContent: "center",
               alignItems: "center",
-              borderRadius: 25,
-              marginVertical: 15,
-              paddingHorizontal: 20,
+              borderRadius: 10,
             }}
           >
-            <ThemedText variant="h3">Add question</ThemedText>
-          </TouchableOpacity>
+            <ThemedText variant="h3" style={{ textAlign: "center" }}>
+              Create Question
+            </ThemedText>
+          </View>
+
+          {/* input Question field */}
+          <View style={{ width: "100%" }}>
+            <ThemedText
+              color={COLORS.white}
+              style={{
+                marginTop: 30,
+                marginBottom: 5,
+                alignSelf: "flex-start",
+              }}
+            >
+              Question
+            </ThemedText>
+          </View>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              gap: 10,
+              alignItems: "center", 
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <ThemedTextInput
+                value={question} 
+                placeholder="Enter quiz Question..."
+                placeholderTextColor={
+                  questionValid ? COLORS.dark_grey : COLORS.light_error
+                }
+                handleChange={(question) => {
+                  setQuestion(question);
+                  setQuestionValid(true);
+                }}
+                style={
+                  questionValid ? {} : { borderColor: COLORS.light_error }
+                }
+              />
+            </View>
+            {/* add image button  */}
+            <ImgReaderButton onFileread={handleImage} />
+          </View>
+
+          {/* input image field */}
+          {img && (
+            <Image
+              source={{ uri: `data:image/jpeg;base64,${img}` }}
+              style={{ width: 200, height: 200, marginTop: 20 }}
+              resizeMode="contain"
+            />
+          )}
+
+          {/* input correctAnswer field */}
+          <View style={{ width: "100%" }}>
+            <ThemedText
+              color={COLORS.white}
+              style={{
+                marginTop: 20,
+                marginBottom: 5,
+                alignSelf: "flex-start",
+              }}
+            >
+              Correct answer
+            </ThemedText>
+          </View>
+          <ThemedTextInput
+            value={correctAnswer}
+            placeholder="Enter correct answer..."
+            placeholderTextColor={
+              correctAnswerValid ? COLORS.dark_grey : COLORS.light_error
+            }
+            handleChange={(corrAnswer) => {
+              setCorrectAnswer(corrAnswer);
+              setCorrectAnswerValid(true);
+            }}
+            style={
+              correctAnswerValid ? {} : { borderColor: COLORS.light_error }
+            }
+          />
+          {/* input options field */}
+          {options.map((option, index) => (
+            <View key={index} style={{ width: "100%" }}>
+              <ThemedText
+                color={COLORS.white}
+                style={{
+                  marginVertical: 5,
+                  alignSelf: "flex-start",
+                }}
+              >
+                Wrong answer {index + 1}
+              </ThemedText>
+              <ThemedTextInput
+                value={option}
+                placeholder={`Enter wrong answer ${index + 1}...`}
+                placeholderTextColor={
+                  optionsValid ? COLORS.dark_grey : COLORS.light_error
+                }
+                handleChange={(text) => {
+                  const newOptions = [...options];
+                  newOptions[index] = text;
+                  setOptions(newOptions);
+                  if (newOptions.every((opt) => opt !== ""))
+                    setOptionsValid(true);
+                }}
+                style={
+                  optionsValid ? {} : { borderColor: COLORS.light_error }
+                }
+              />
+            </View>
+          ))}
         </View>
       </ScrollView>
+
+      {/* validation button — fixed above bottom edge */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: 0,
+          right: 0,
+          alignItems: "center",
+          opacity: modalVisible ? 0.2 : 1,
+        }}
+      >
+        <TouchableOpacity
+          onPress={handleAddingQuestion}
+          style={{
+            backgroundColor: COLORS.explore,
+            height: 50,
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: 25,
+            paddingHorizontal: 30,
+          }}
+        >
+          <ThemedText variant="h3">Add question</ThemedText>
+        </TouchableOpacity>
+      </View>
 
       {/* modal */}
       <ModalAlert
