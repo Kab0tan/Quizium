@@ -51,7 +51,7 @@ export default function Index() {
               </ThemedText>
             </View>
             <View style={{ flex: 4, alignItems: "flex-end" }}>
-              <AntDesign name="plus-square-o" size={40} color={COLORS.black} />
+              <AntDesign name="plus-square" size={40} color={COLORS.black} />
             </View>
           </TouchableOpacity>
         </Link>

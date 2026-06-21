@@ -47,14 +47,14 @@ export function ModalAlert({ message, modalVisible, errorCreate }: Prop) {
           )}
           {!errorCreate ? (
             <AntDesign
-              name={errorCreate ? "closecircle" : "checkcircle"}
+              name={errorCreate ? "close-circle" : "check-circle"}
               size={50}
               color={errorCreate ? COLORS.error : COLORS.success}
               style={{ marginTop: 20 }}
             />
           ) : (
             <AntDesign
-              name="closecircle"
+              name="close-circle"
               size={50}
               color={COLORS.error}
               style={{ marginTop: 20 }}

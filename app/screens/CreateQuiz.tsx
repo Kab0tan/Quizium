@@ -117,7 +117,7 @@ export default function CreateQuiz() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingVertical: 20,
+          paddingBottom: 20,
           opacity: modalAlertVisible || modalInfoVisible ? 0.2 : 1,
         }}
       >

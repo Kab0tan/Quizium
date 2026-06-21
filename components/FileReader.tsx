@@ -99,7 +99,7 @@ export function FileReaderButton({ onFileread }: Prop) {
               onFileread?.([]);
             }}
           >
-            <AntDesign name="closecircle" size={15} color={COLORS.error} />
+            <AntDesign name="close-circle" size={15} color={COLORS.error} />
           </TouchableOpacity>
         </View>
       )}
@@ -191,7 +191,7 @@ export function ImgReaderButton({ onFileread }: Prop) {
         }}
       >
         {loaded ? (
-          <AntDesign name="closecircle" size={25} />
+          <AntDesign name="close-circle" size={25} />
         ) : (
           <FontAwesome6 name="image" size={25} />
         )}

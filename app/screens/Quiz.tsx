@@ -355,16 +355,6 @@ export default function Quiz() {
               <ThemedText variant="h2" style={{ marginBottom: 20 }}>
                 {score} out of {allQuestions.length}
               </ThemedText>
-              {/* <AntDesign
-                name={
-                  score != allQuestions.length ? "closecircle" : "checkcircle"
-                }
-                color={
-                  score != allQuestions.length ? COLORS.error : COLORS.success
-                }
-                size={50}
-                style={{ marginBottom: 20 }}
-              /> */}
               <CircularProgress
                 value={score/allQuestions.length*100}
                 valueSuffix={"%"}
