@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react";
 import {
-  SafeAreaView,
   View,
   TouchableOpacity,
   FlatList,
   Modal,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useFocusEffect, router } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";

@@ -1,11 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import {
-  SafeAreaView,
   View,
   TouchableOpacity,
   ScrollView,
   Image,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedTextInput } from "../components/ThemedTextInput";

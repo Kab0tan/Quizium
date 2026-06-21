@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { SafeAreaView, View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
 import { COLORS } from "../constants/theme";
 import { ThemedText } from "../components/ThemedText";

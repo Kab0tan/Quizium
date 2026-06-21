@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { SafeAreaView, View, TouchableOpacity, Modal } from "react-native";
+import { View, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedTextInput } from "../components/ThemedTextInput";
@@ -200,7 +201,7 @@ export default function CreateQuiz() {
               style={{ marginTop: 15 }}
               onPress={() => setModalInfoVisible(true)}
             >
-              <AntDesign name="questioncircleo" size={30} color={COLORS.grey} />
+              <AntDesign name="question-circle" size={30} color={COLORS.grey} />
             </TouchableOpacity>
             <FileReaderButton onFileread={handleFileContent} />
           </View>

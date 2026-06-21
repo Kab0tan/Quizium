@@ -1,12 +1,12 @@
 // React and React Native imports
 import { useState, useCallback } from "react";
 import {
-  SafeAreaView,
   View,
   TouchableOpacity,
   FlatList,
   Image,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 // Expo and Navigation imports
 import { useLocalSearchParams, Link, useFocusEffect } from "expo-router";
 // Icon imports
