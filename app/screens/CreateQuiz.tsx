@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from "react";
-import { View, TouchableOpacity } from "react-native";
+﻿import { useState, useRef, useEffect } from "react";
+import { View, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { ThemedText } from "../components/ThemedText";
-import { ThemedTextInput } from "../components/ThemedTextInput";
-import { FileReaderButton } from "../components/FileReader";
-import { ModalAlert, ModalInfo } from "../components/ModalAlert";
-import { useDatabase } from "../useDatabase";
+import { ThemedText } from "../../components/ThemedText";
+import { ThemedTextInput } from "../../components/ThemedTextInput";
+import { FileReaderButton } from "../../components/FileReader";
+import { ModalAlert, ModalInfo } from "../../components/ModalAlert";
+import { useDatabase } from "../../useDatabase";
 import { AntDesign } from "@expo/vector-icons";
-import { COLORS } from "../constants/theme";
+import { COLORS } from "../../constants/theme";
 
 export default function CreateQuiz() {
   const [name, setName] = useState("");
@@ -111,9 +111,9 @@ export default function CreateQuiz() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
-      <View
-        style={{
-          flex: 1,
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-between",
@@ -223,7 +223,7 @@ export default function CreateQuiz() {
         >
           <ThemedText variant="h3">Generate Quiz</ThemedText>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
 
       <ModalAlert
         message="Quiz created successfully!"

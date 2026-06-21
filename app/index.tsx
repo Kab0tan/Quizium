@@ -8,8 +8,8 @@ import {
 } from "@expo-google-fonts/montserrat";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { ThemedText } from "./components/ThemedText";
-import { COLORS } from "./constants/theme";
+import { ThemedText } from "../components/ThemedText";
+import { COLORS } from "../constants/theme";
 
 export default function Index() {
   const [fontsLoaded] = useFonts({
@@ -51,7 +51,7 @@ export default function Index() {
               </ThemedText>
             </View>
             <View style={{ flex: 4, alignItems: "flex-end" }}>
-              <AntDesign name="plussquareo" size={40} color={COLORS.black} />
+              <AntDesign name="plus-square-o" size={40} color={COLORS.black} />
             </View>
           </TouchableOpacity>
         </Link>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+﻿import { useState, useCallback, useRef, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -7,12 +7,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
-import { ThemedText } from "../components/ThemedText";
-import { ThemedTextInput } from "../components/ThemedTextInput";
-import { ImgReaderButton } from "../components/FileReader";
-import { ModalAlert } from "../components/ModalAlert";
-import { useDatabase } from "../useDatabase";
-import { COLORS } from "../constants/theme";
+import { ThemedText } from "../../components/ThemedText";
+import { ThemedTextInput } from "../../components/ThemedTextInput";
+import { ImgReaderButton } from "../../components/FileReader";
+import { ModalAlert } from "../../components/ModalAlert";
+import { useDatabase } from "../../useDatabase";
+import { COLORS } from "../../constants/theme";
 
 export default function CreateQuestion() {
   const [question, setQuestion] = useState("");
@@ -241,7 +241,7 @@ export default function CreateQuestion() {
         </View>
       </ScrollView>
 
-      {/* validation button — fixed above bottom edge */}
+      {/* validation button â€” fixed above bottom edge */}
       <View
         style={{
           position: "absolute",

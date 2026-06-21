@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+﻿import { useState, useCallback } from "react";
 import {
   View,
   TouchableOpacity,
@@ -11,11 +11,11 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
-import { ThemedText } from "../components/ThemedText";
-import { ThemedTextInput } from "../components/ThemedTextInput";
-import { ModalDelete } from "../components/ModalAlert";
-import { useDatabase } from "../useDatabase";
-import { COLORS } from "../constants/theme";
+import { ThemedText } from "../../components/ThemedText";
+import { ThemedTextInput } from "../../components/ThemedTextInput";
+import { ModalDelete } from "../../components/ModalAlert";
+import { useDatabase } from "../../useDatabase";
+import { COLORS } from "../../constants/theme";
 
 export default function ListQuiz() {
   const [quizzes, setQuizzes] = useState([]);

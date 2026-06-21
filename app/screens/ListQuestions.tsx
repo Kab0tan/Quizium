@@ -1,4 +1,4 @@
-// React and React Native imports
+﻿// React and React Native imports
 import { useState, useCallback } from "react";
 import {
   View,
@@ -13,11 +13,11 @@ import { useLocalSearchParams, Link, useFocusEffect } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 // Custom component and hook imports
-import { ThemedText } from "../components/ThemedText";
-import { useDatabase } from "../useDatabase";
-import { ModalDelete } from "../components/ModalAlert";
+import { ThemedText } from "../../components/ThemedText";
+import { useDatabase } from "../../useDatabase";
+import { ModalDelete } from "../../components/ModalAlert";
 // Constants
-import { COLORS } from "../constants/theme";
+import { COLORS } from "../../constants/theme";
 
 export default function ListQuestions() {
   const { quizId } = useLocalSearchParams();
@@ -93,7 +93,7 @@ export default function ListQuestions() {
                 alignItems: "center",
               }}
             >
-              <AntDesign name="plussquareo" size={40} color={COLORS.black} />
+              <AntDesign name="plus-square-o" size={40} color={COLORS.black} />
             </TouchableOpacity>
           </Link>
         </View>
@@ -199,7 +199,7 @@ export default function ListQuestions() {
                 {JSON.parse(item["options"]).map(
                   (option: string, index: number) =>
                     option != item["correct_answer"] && (
-                      <ThemedText key={index}>• {option}</ThemedText>
+                      <ThemedText key={index}>â€¢ {option}</ThemedText>
                     )
                 )}
               </View>

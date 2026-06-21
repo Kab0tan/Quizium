@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+﻿import { useState, useCallback, useRef, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router, useFocusEffect } from "expo-router";
-import { ThemedText } from "../components/ThemedText";
-import { ThemedTextInput } from "../components/ThemedTextInput";
-import { ModalAlert } from "../components/ModalAlert";
-import { ImgReaderButton } from "../components/FileReader";
-import { useDatabase } from "../useDatabase";
-import { COLORS } from "../constants/theme";
+import { ThemedText } from "../../components/ThemedText";
+import { ThemedTextInput } from "../../components/ThemedTextInput";
+import { ModalAlert } from "../../components/ModalAlert";
+import { ImgReaderButton } from "../../components/FileReader";
+import { useDatabase } from "../../useDatabase";
+import { COLORS } from "../../constants/theme";
 
 interface Question {
   id: number;

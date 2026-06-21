@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+﻿import { useState, useCallback, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -15,9 +15,9 @@ import { useLocalSearchParams, useFocusEffect, router } from "expo-router";
 import CircularProgress from "react-native-circular-progress-indicator";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { ThemedText } from "../components/ThemedText";
-import { useDatabase } from "../useDatabase";
-import { COLORS } from "../constants/theme";
+import { ThemedText } from "../../components/ThemedText";
+import { useDatabase } from "../../useDatabase";
+import { COLORS } from "../../constants/theme";
 
 export default function Quiz() {
   const { quizId } = useLocalSearchParams();

@@ -1,12 +1,12 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
-import { COLORS } from "../constants/theme";
-import { ThemedText } from "../components/ThemedText";
-import { ThemedTextInput } from "../components/ThemedTextInput";
-import { ModalAlert } from "../components/ModalAlert";
-import { useDatabase } from "../useDatabase";
+import { COLORS } from "../../constants/theme";
+import { ThemedText } from "../../components/ThemedText";
+import { ThemedTextInput } from "../../components/ThemedTextInput";
+import { ModalAlert } from "../../components/ModalAlert";
+import { useDatabase } from "../../useDatabase";
 
 export default function UpdateQuiz() {
   const { quizId, name, description } = useLocalSearchParams();

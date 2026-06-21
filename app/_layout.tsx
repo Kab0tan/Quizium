@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
-import { BackPressable } from "./components/BackPressable";
-import { HomePressable } from "./components/HomePressable";
-import { COLORS } from "./constants/theme";
+import { BackPressable } from "../components/BackPressable";
+import { HomePressable } from "../components/HomePressable";
+import { COLORS } from "../constants/theme";
 
 const ANIMATION = "fade_from_bottom";
 
